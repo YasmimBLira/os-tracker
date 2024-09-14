@@ -1,6 +1,7 @@
 package com.br.inverame.model.entity;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Data;
+
+import java.time.LocalDateTime;
 
 import com.br.inverame.model.enuns.Priority;
 
@@ -36,7 +37,7 @@ public class ServiceOrder {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false, updatable = false)
-    private Data registrationDate; //obrigatiro "devr se feito de forma automatica"
+    private LocalDateTime registrationDate; //obrigatiro "devr se feito de forma automatica"
 
    
     public ServiceOrder() {
@@ -45,7 +46,7 @@ public class ServiceOrder {
     
 
     public ServiceOrder(long equipmentId, String responsible, String numbersOs, String nf_e, Priority priority,
-            Data registrationDate) {
+    LocalDateTime registrationDate) {
         this.equipmentId = equipmentId;
         this.responsible = responsible;
         this.numbersOs = numbersOs;
@@ -96,11 +97,11 @@ public class ServiceOrder {
         this.priority = priority;
     }
 
-    public Data getRegistrationDate() {
+    public LocalDateTime getRegistrationDate() {
         return registrationDate;
     }
 
-    public void setRegistrationDate(Data registrationDate) {
+    public void setRegistrationDate(LocalDateTime registrationDate) {
         this.registrationDate = registrationDate;
     }
 
