@@ -19,7 +19,7 @@ import com.br.inverame.model.entity.ServiceOrder;
 import com.br.inverame.service.ServiceOrderService;
 
 @RestController
-@RequestMapping("/api/service-orders")
+@RequestMapping("/api/serviceOrders")
 public class ServiceOrderController {
 
     @Autowired

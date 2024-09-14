@@ -1,6 +1,5 @@
 package com.br.inverame.model.entity;
 
-
 import java.time.LocalDateTime;
 
 import com.br.inverame.model.enuns.Priority;
@@ -12,42 +11,38 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "service_order")
 public class ServiceOrder {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long equipmentId;  //autoincrement
+    private long id;  // Renomeado para id para maior clareza
 
     @Column(nullable = false)
-    private String responsible; // pbrigatoro
+    private String responsible; // Obrigatório
 
     @Column(nullable = false, unique = true)
-    private String numbersOs;  //obrigatorio
+    private String numbersOs;  // Obrigatório
 
-    @Column(nullable = false)
-    private String nf_e;        //opcional
+    @Column(nullable = true)
+    private String nf_e;        // Opcional
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Priority priority;  //obrigatorio
+    private Priority priority;  // Obrigatório
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false, updatable = false)
-    private LocalDateTime registrationDate; //obrigatiro "devr se feito de forma automatica"
+    private LocalDateTime registrationDate; // Obrigatório, deve ser feito de forma automática
 
-   
     public ServiceOrder() {
+        // Construtor padrão
     }
 
-    
-
-    public ServiceOrder(long equipmentId, String responsible, String numbersOs, String nf_e, Priority priority,
-    LocalDateTime registrationDate) {
-        this.equipmentId = equipmentId;
+    public ServiceOrder(String responsible, String numbersOs, String nf_e, Priority priority,
+                        LocalDateTime registrationDate) {
         this.responsible = responsible;
         this.numbersOs = numbersOs;
         this.nf_e = nf_e;
@@ -55,14 +50,13 @@ public class ServiceOrder {
         this.registrationDate = registrationDate;
     }
 
-
-
-    public long getEquipmentId() {
-        return equipmentId;
+    // Getters e setters
+    public long getId() {
+        return id;
     }
 
-    public void setEquipmentId(long equipmentId) {
-        this.equipmentId = equipmentId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getResponsible() {
@@ -104,7 +98,4 @@ public class ServiceOrder {
     public void setRegistrationDate(LocalDateTime registrationDate) {
         this.registrationDate = registrationDate;
     }
-
-    
-
 }
