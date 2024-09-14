@@ -1,7 +1,8 @@
 package com.br.inverame.repository;
 
-<<<<<<< Updated upstream
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,14 +19,3 @@ public interface ServiceOrderRepository  extends JpaRepository<ServiceOrder, Lon
     @Query("SELECT so FROM ServiceOrder so WHERE so.registrationDate > :date")
     List<ServiceOrder> findOrdersAfterDate(@Param("date") Date date);
 }
-=======
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.br.inverame.model.entity.ServiceOrder;
-
-public interface ServiceOrderRepository  extends JpaRepository<ServiceOrder, Long> {    
-
-
-    
-}
->>>>>>> Stashed changes
