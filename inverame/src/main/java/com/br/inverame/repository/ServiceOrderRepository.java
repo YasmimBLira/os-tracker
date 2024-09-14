@@ -1,5 +1,11 @@
 package com.br.inverame.repository;
 
-public class ServiceOrderRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.br.inverame.model.entity.ServiceOrder;
+
+public interface ServiceOrderRepository  extends JpaRepository<ServiceOrder, Long> {    
+
+
     
 }
