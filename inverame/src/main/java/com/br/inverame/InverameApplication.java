@@ -6,11 +6,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class InverameApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(InverameApplication.class, args);
-	}
+public static void main(String[] args) {
+	SpringApplication.run(InverameApplication.class, args);
+}
 
 }
 
 //Larissa
 //Thailan
+//Thialy
