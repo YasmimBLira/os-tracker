@@ -30,4 +30,19 @@ public class ClientService{
         clientRepository.deleteById(id);
     }
 
+    public Client updateClient(Client client) {
+        if (client.getId() == null) {
+            throw new IllegalArgumentException("Client ID must not be null");
+        }
+
+        // Check if the client exists
+        Optional<Client> existingClientOpt = clientRepository.findById(client.getId());
+        if (!existingClientOpt.isPresent()) {
+            throw new IllegalArgumentException("Client with ID " + client.getId() + " does not exist");
+        }
+
+        // Save the updated client
+        return clientRepository.save(client);
+    }
+
 }
