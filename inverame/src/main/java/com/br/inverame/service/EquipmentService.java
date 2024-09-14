@@ -23,12 +23,11 @@ import java.util.Collections;
 public class EquipmentService {
 
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    private static final String SERVICE_ACOUNT_KEY_PATH = getPathToGoodleCredentials();
+    private static final String SERVICE_ACOUNT_KEY_PATH = getPathToGoogleCredentials();
 
-    private static String getPathToGoodleCredentials() {
-        String currentDirectory = System.getProperty("user.dir");
-        Path filePath = Paths.get(currentDirectory, "os-tracker/credentials.json");
-        return filePath.toString();
+    private static String getPathToGoogleCredentials() {
+        // Use barras duplas para caminhos no Windows ou barras normais para caminhos relativos
+        return "C:\\Users\\Setor(sem senha)\\Desktop\\os-tracker\\credentials.json";
     }
 
     public String uploadImageToDrive(File file, String serialNumber, String equipmentName) throws GeneralSecurityException, IOException {
