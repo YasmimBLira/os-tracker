@@ -26,9 +26,7 @@ public class EquipmentService {
     private static final String SERVICE_ACOUNT_KEY_PATH = getPathToGoodleCredentials();
 
     private static String getPathToGoodleCredentials() {
-        String currentDirectory = System.getProperty("user.dir");
-        Path filePath = Paths.get(currentDirectory, "os-tracker/credentials.json");
-        return filePath.toString();
+        return "C:\\Users\\thial\\OneDrive\\Área de Trabalho\\ostracker\\os-tracker\\credentials.json";
     }
 
     public String uploadImageToDrive(File file, String serialNumber, String equipmentName) throws GeneralSecurityException, IOException {
