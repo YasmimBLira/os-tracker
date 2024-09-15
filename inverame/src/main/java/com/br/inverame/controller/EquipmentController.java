@@ -47,11 +47,11 @@ public class EquipmentController {
             @RequestParam("priorityLevel") String priorityLevel,
             @RequestParam("lastOS") String lastOS,
             @RequestParam("description") String description,
-            @RequestParam("clientId") Long clientId  // Alterado para Long
+            @RequestParam("clientId") Long clientId
     ) throws IOException, GeneralSecurityException {
     
         if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("File is empty");
+            return ResponseEntity.badRequest().body("O arquivo está vazio");
         }
     
         // Cria um arquivo temporário para salvar o upload
@@ -62,12 +62,21 @@ public class EquipmentController {
         String imageUrl = equipmentService.uploadImageToDrive(tempFile, serialNumber, name);
         
         if (imageUrl == null) {
-            return ResponseEntity.status(500).body("Error uploading image to Google Drive");
+            return ResponseEntity.status(500).body("Erro ao enviar imagem para o Google Drive");
+        }
+
+        // Verifica se um equipamento com o mesmo nome ou número de série já existe
+        if (equipmentRepository.existsByName(name)) {
+            return ResponseEntity.badRequest().body("Já existe um equipamento com o mesmo nome.");
+        }
+
+        if (equipmentRepository.existsBySerialNumber(serialNumber)) {
+            return ResponseEntity.badRequest().body("Já existe um equipamento com o mesmo número de série.");
         }
     
         // Busca o cliente a partir do ID
         Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new RuntimeException("Client not found"));
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
     
         // Cria o objeto Equipment e preenche os dados
         Equipment equipment = new Equipment();
@@ -92,5 +101,4 @@ public class EquipmentController {
     
         return ResponseEntity.ok("Equipamento salvo com sucesso");
     }
-    
 }
