@@ -1,32 +1,34 @@
 package com.br.inverame.model.entity.dto;
 
-import com.br.inverame.model.entity.Client;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.br.inverame.model.entity.Client;
+import com.br.inverame.model.entity.Equipment;
 
 public class ClientDTO {
     private Long id;
     private String name;
     private String phone;
-    private String registerDate;
+    private LocalDateTime registerDate;
     private String codClient;
     private String cnpj;
-    private List<Long> equipmentIds;
+    private List<Integer> osNumbers; // Lista com números de OS dos equipamentos
 
-    // Construtor que recebe um Client
     public ClientDTO(Client client) {
         this.id = client.getId();
         this.name = client.getName();
         this.phone = client.getPhone();
-        this.registerDate = client.getRegisterDate().toString();
+        this.registerDate = client.getRegisterDate();
         this.codClient = client.getCodClient();
         this.cnpj = client.getCnpj();
-        this.equipmentIds = client.getEquipments().stream()
-                                .map(equipment -> equipment.getId())
-                                .collect(Collectors.toList());
+        this.osNumbers = client.getEquipments().stream()
+                            .map(Equipment::getOsNumber)
+                            .collect(Collectors.toList());
     }
 
     // Getters e Setters
+
     public Long getId() {
         return id;
     }
@@ -51,11 +53,11 @@ public class ClientDTO {
         this.phone = phone;
     }
 
-    public String getRegisterDate() {
+    public LocalDateTime getRegisterDate() {
         return registerDate;
     }
 
-    public void setRegisterDate(String registerDate) {
+    public void setRegisterDate(LocalDateTime registerDate) {
         this.registerDate = registerDate;
     }
 
@@ -75,11 +77,11 @@ public class ClientDTO {
         this.cnpj = cnpj;
     }
 
-    public List<Long> getEquipmentIds() {
-        return equipmentIds;
+    public List<Integer> getOsNumbers() {
+        return osNumbers;
     }
 
-    public void setEquipmentIds(List<Long> equipmentIds) {
-        this.equipmentIds = equipmentIds;
+    public void setOsNumbers(List<Integer> osNumbers) {
+        this.osNumbers = osNumbers;
     }
 }

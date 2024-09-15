@@ -34,8 +34,8 @@ public class ClientController {
     public ResponseEntity<List<ClientDTO>> getAllClients() {
         List<Client> clients = clientService.getAllClients();
         List<ClientDTO> clientDTOs = clients.stream()
-            .map(ClientDTO::new)
-            .collect(Collectors.toList());
+                .map(ClientDTO::new)
+                .collect(Collectors.toList());
         return new ResponseEntity<>(clientDTOs, HttpStatus.OK);
     }
 
