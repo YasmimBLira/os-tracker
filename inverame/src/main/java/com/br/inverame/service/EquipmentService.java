@@ -27,7 +27,7 @@ public class EquipmentService {
 
     private static String getPathToGoogleCredentials() {
         // Use barras duplas para caminhos no Windows ou barras normais para caminhos relativos
-        return "C:\\Users\\Setor(sem senha)\\Desktop\\os-tracker\\credentials.json";
+        return "C:\\Users\\Setor(sem senha)\\Desktop\\os-tracker\\inverame\\credentials.json";
     }
 
     public String uploadImageToDrive(File file, String serialNumber, String equipmentName) throws GeneralSecurityException, IOException {
