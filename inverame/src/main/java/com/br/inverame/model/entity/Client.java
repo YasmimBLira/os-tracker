@@ -1,11 +1,15 @@
 package com.br.inverame.model.entity;
 
+import java.time.LocalDateTime;
+import java.util.Set;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "client")
@@ -14,13 +18,24 @@ public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "phone", nullable = false)
     private String phone;
+
+    @Column(name = "register_date", nullable = false)
     private LocalDateTime registerDate;
 
-    // Construtor vazio
-    public Client() {
-    }
+    @Column(name = "cod_client", nullable = false)
+    private String codClient;
+
+    @Column(name = "cnpj", nullable = false)
+    private String cnpj;
+
+    @OneToMany(mappedBy = "client")
+    private Set<Equipment> equipments;
 
     // Getters and Setters
     public Long getId() {
@@ -53,5 +68,29 @@ public class Client {
 
     public void setRegisterDate(LocalDateTime registerDate) {
         this.registerDate = registerDate;
+    }
+
+    public String getCodClient() {
+        return codClient;
+    }
+
+    public void setCodClient(String codClient) {
+        this.codClient = codClient;
+    }
+
+    public String getCnpj() {
+        return cnpj;
+    }
+
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
+    }
+
+    public Set<Equipment> getEquipments() {
+        return equipments;
+    }
+
+    public void setEquipments(Set<Equipment> equipments) {
+        this.equipments = equipments;
     }
 }

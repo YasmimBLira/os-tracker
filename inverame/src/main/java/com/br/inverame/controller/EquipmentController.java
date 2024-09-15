@@ -85,7 +85,7 @@ public class EquipmentController {
         equipment.setDescription(description);
         equipment.setPhotoURL(imageUrl); // Seta a URL da imagem no campo photoURL
         equipment.setRegistrationDate(LocalDateTime.now());
-        equipment.setClientId(client); // Associa o cliente ao equipamento
+        equipment.setClient(client); // Associa o cliente ao equipamento
     
         // Salva o Equipment no banco de dados
         equipmentRepository.save(equipment);
