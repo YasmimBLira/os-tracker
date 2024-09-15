@@ -1,6 +1,7 @@
 package com.br.inverame.controller;
 
 import com.br.inverame.model.entity.Client;
+import com.br.inverame.model.entity.dto.ClientDTO;
 import com.br.inverame.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/clients")
@@ -29,16 +31,20 @@ public class ClientController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Client>> getAllClients() {
+    public ResponseEntity<List<ClientDTO>> getAllClients() {
         List<Client> clients = clientService.getAllClients();
-        return new ResponseEntity<>(clients, HttpStatus.OK);
+        List<ClientDTO> clientDTOs = clients.stream()
+            .map(ClientDTO::new)
+            .collect(Collectors.toList());
+        return new ResponseEntity<>(clientDTOs, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getClientById(@PathVariable Long id) {
         Optional<Client> client = clientService.getClientById(id);
         if (client.isPresent()) {
-            return new ResponseEntity<>(client.get(), HttpStatus.OK);
+            ClientDTO clientDTO = new ClientDTO(client.get());
+            return new ResponseEntity<>(clientDTO, HttpStatus.OK);
         } else {
             return new ResponseEntity<>("Client not found", HttpStatus.NOT_FOUND);
         }
