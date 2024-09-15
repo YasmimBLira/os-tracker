@@ -57,8 +57,8 @@ public class Equipment {
 
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
-    private Client clientId; // Relação com a entidade Client
-
+    private Client client; // Relação com a entidade Client
+    
     // Getters and Setters
     public Long getId() {
         return id;
@@ -114,11 +114,11 @@ public class Equipment {
     public void setPriorityLevel(String priorityLevel) {
         this.priorityLevel = priorityLevel;
     }
-    public Client getClientId() {
-        return clientId;
+    public Client getClient() {
+        return client;
     }
-    public void setClientId(Client client) {
-        this.clientId = client;
+    public void setClient(Client client) {
+        this.client = client;
     }
     public LocalDateTime getRegistrationDate() {
         return registrationDate;
