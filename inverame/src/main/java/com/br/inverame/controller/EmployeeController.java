@@ -47,7 +47,8 @@ public class EmployeeController {
             .collect(Collectors.toList());
         return new ResponseEntity<>(employeeDTOs, HttpStatus.OK);
     }
-
+    
+    // mudança de rota de get 
     @GetMapping("/{id}")
     public ResponseEntity<?> getEmployeeById(@PathVariable Long id) {
         Optional<Employee> employee = employeeService.getEmployeeById(id);
