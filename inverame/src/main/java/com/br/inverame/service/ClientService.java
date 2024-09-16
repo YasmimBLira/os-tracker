@@ -17,13 +17,13 @@ public class ClientService {
 
     public Client saveClient(Client client) {
         if (clientRepository.existsByName(client.getName())) {
-            throw new IllegalArgumentException("Client with this name already exists.");
+            throw new IllegalArgumentException("Cliente com este nome já existe.");
         }
         if (clientRepository.existsByCnpj(client.getCnpj())) {
-            throw new IllegalArgumentException("Client with this CNPJ already exists.");
+            throw new IllegalArgumentException("Cliente com este CNPJ já existe.");
         }
         if (clientRepository.existsByCodClient(client.getCodClient())) {
-            throw new IllegalArgumentException("Client with this code already exists.");
+            throw new IllegalArgumentException("Cliente com este código já existe.");
         }
         return clientRepository.save(client);
     }
@@ -38,16 +38,16 @@ public class ClientService {
 
     public Client updateClient(Long id, Client client) {
         if (!clientRepository.existsById(id)) {
-            throw new IllegalArgumentException("Client with this ID does not exist.");
+            throw new IllegalArgumentException("Cliente com este ID não existe.");
         }
         if (clientRepository.existsByName(client.getName()) && !clientRepository.findByName(client.getName()).get().getId().equals(id)) {
-            throw new IllegalArgumentException("Client with this name already exists.");
+            throw new IllegalArgumentException("Cliente com este nome já existe.");
         }
         if (clientRepository.existsByCnpj(client.getCnpj()) && !clientRepository.findByCnpj(client.getCnpj()).get().getId().equals(id)) {
-            throw new IllegalArgumentException("Client with this CNPJ already exists.");
+            throw new IllegalArgumentException("Cliente com este CNPJ já existe.");
         }
         if (clientRepository.existsByCodClient(client.getCodClient()) && !clientRepository.findByCodClient(client.getCodClient()).get().getId().equals(id)) {
-            throw new IllegalArgumentException("Client with this code already exists.");
+            throw new IllegalArgumentException("Cliente com este código já existe.");
         }
         client.setId(id);
         return clientRepository.save(client);
@@ -57,7 +57,7 @@ public class ClientService {
         try {
             clientRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("Client with this ID does not exist.");
+            throw new IllegalArgumentException("Cliente com este ID não existe.");
         }
     }
 }

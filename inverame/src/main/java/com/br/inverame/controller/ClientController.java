@@ -1,15 +1,26 @@
 package com.br.inverame.controller;
 
-import com.br.inverame.model.entity.Client;
-import com.br.inverame.service.ClientService;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.List;
-import java.util.Optional;
+import com.br.inverame.model.entity.Client;
+import com.br.inverame.model.entity.dto.ClientDTO;
+import com.br.inverame.service.ClientService;
 
 @RestController
 @RequestMapping("/api/clients")
@@ -29,20 +40,24 @@ public class ClientController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Client>> getAllClients() {
-        List<Client> clients = clientService.getAllClients();
-        return new ResponseEntity<>(clients, HttpStatus.OK);
-    }
+public ResponseEntity<List<ClientDTO>> getAllClients() {
+    List<Client> clients = clientService.getAllClients();
+    List<ClientDTO> clientDTOs = clients.stream()
+        .map(ClientDTO::new)
+        .collect(Collectors.toList());
+    return new ResponseEntity<>(clientDTOs, HttpStatus.OK);
+}
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getClientById(@PathVariable Long id) {
-        Optional<Client> client = clientService.getClientById(id);
-        if (client.isPresent()) {
-            return new ResponseEntity<>(client.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Client not found", HttpStatus.NOT_FOUND);
-        }
+@GetMapping("/{id}")
+public ResponseEntity<?> getClientById(@PathVariable Long id) {
+    Optional<Client> client = clientService.getClientById(id);
+    if (client.isPresent()) {
+        ClientDTO clientDTO = new ClientDTO(client.get());
+        return new ResponseEntity<>(clientDTO, HttpStatus.OK);
+    } else {
+        return new ResponseEntity<>("Client not found", HttpStatus.NOT_FOUND);
     }
+}
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateClient(@PathVariable Long id, @RequestBody @Valid Client client) {
@@ -53,6 +68,8 @@ public class ClientController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteClient(@PathVariable Long id) {
