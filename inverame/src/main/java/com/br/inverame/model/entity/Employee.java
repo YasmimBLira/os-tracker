@@ -7,7 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -20,6 +19,12 @@ public class Employee {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "user_name", nullable = false)
+    private String userName;
+
+    @Column(name = "e-mail", nullable = false)
+    private String email;
 
     @Column(name = "register_date", nullable = false)
     private LocalDateTime registerDate;
@@ -40,6 +45,20 @@ public class Employee {
     }
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public LocalDateTime getRegisterDate() {

@@ -8,6 +8,8 @@ public class EmployeeDTO {
     private String name;
     private LocalDateTime registerDate;
     private String employeeCod;
+    private String userName;
+    private String email;
 
     // Construtor que recebe um Employee
     public EmployeeDTO(Employee employee) {
@@ -15,6 +17,8 @@ public class EmployeeDTO {
         this.name = employee.getName();
         this.registerDate = employee.getRegisterDate();
         this.employeeCod = employee.getEmployeeCod();
+        this.userName = employee.getUserName();
+        this.email = employee.getEmail();
     }
 
     // Getters e Setters compactos
@@ -26,4 +30,8 @@ public class EmployeeDTO {
     public void setRegisterDate(LocalDateTime registerDate) { this.registerDate = registerDate; }
     public String getEmployeeCod() { return employeeCod; }
     public void setEmployeeCod(String employeeCod) { this.employeeCod = employeeCod; }
+    public String getUserName() { return userName; }
+    public void setUserName(String userName) { this.userName = userName; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 }

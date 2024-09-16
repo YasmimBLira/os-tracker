@@ -16,10 +16,15 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     boolean existsByName(String name);
     boolean existsByRegisterDate(LocalDateTime registerDate);
     boolean existsByEmployeeCod(String employeeCod);
+    boolean existsByUserName(String userName);
+    boolean existsByEmail(String email);
     
     Optional<Employee> findById(Long id);
     Optional<Employee> findByName(String name);
     Optional<Employee> findByRegisterDate(LocalDateTime registerDate);
     Optional<Employee> findByEmployeeCod(String employeeCod);
+    Optional<Employee> findByUserName(String userName);
+    Optional<Employee> findByEmail(String email);
+    
 
 }
