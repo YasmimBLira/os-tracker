@@ -2,6 +2,9 @@ package com.br.inverame.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,59 +19,65 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.br.inverame.model.entity.Client;
+import com.br.inverame.model.entity.dto.ClientDTO;
 import com.br.inverame.service.ClientService;
 
 @RestController
-@RequestMapping("api/clients")
+@RequestMapping("/api/clients")
 public class ClientController {
-    
+
     @Autowired
     private ClientService clientService;
 
-    @GetMapping
-    public List<Client> getAllClients(){
-        return clientService.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Client> getClientById(@PathVariable Long id){
-        Optional<Client> client = clientService.findById(id);
-        return client.map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
-    }
-
     @PostMapping
-    public ResponseEntity<Client> createClient(@RequestBody Client client){
+    public ResponseEntity<String> createClient(@RequestBody @Valid Client client) {
         try {
-            Client savedClient = clientService.createClient(client);
-            return ResponseEntity.ok(savedClient);
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            Client savedClient = clientService.saveClient(client);
+            return new ResponseEntity<>("Client created with ID: " + savedClient.getId(), HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
-     @PutMapping("/{id}") // Adicionar este endpoint
-    public ResponseEntity<Client> updateClient(@PathVariable Long id, @RequestBody Client client) {
-        Optional<Client> existingClient = clientService.findById(id);
-        
-        if (existingClient.isPresent()) {
-            Client updatedClient = existingClient.get();
-            updatedClient.setName(client.getName());
-            updatedClient.setPhone(client.getPhone());
-            updatedClient.setRegisterDate(client.getRegisterDate());
-            
-            // Presumindo que o método updateClient no ClientService realiza a atualização
-            Client savedClient = clientService.updateClient(updatedClient);
-            return ResponseEntity.ok(savedClient);
-        } else {
-            return ResponseEntity.notFound().build();
+    @GetMapping
+public ResponseEntity<List<ClientDTO>> getAllClients() {
+    List<Client> clients = clientService.getAllClients();
+    List<ClientDTO> clientDTOs = clients.stream()
+        .map(ClientDTO::new)
+        .collect(Collectors.toList());
+    return new ResponseEntity<>(clientDTOs, HttpStatus.OK);
+}
+
+@GetMapping("/{id}")
+public ResponseEntity<?> getClientById(@PathVariable Long id) {
+    Optional<Client> client = clientService.getClientById(id);
+    if (client.isPresent()) {
+        ClientDTO clientDTO = new ClientDTO(client.get());
+        return new ResponseEntity<>(clientDTO, HttpStatus.OK);
+    } else {
+        return new ResponseEntity<>("Client not found", HttpStatus.NOT_FOUND);
+    }
+}
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateClient(@PathVariable Long id, @RequestBody @Valid Client client) {
+        try {
+            Client updatedClient = clientService.updateClient(id, client);
+            return new ResponseEntity<>("Client updated with ID: " + updatedClient.getId(), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClient(@PathVariable Long id){
-        clientService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> deleteClient(@PathVariable Long id) {
+        try {
+            clientService.deleteClient(id);
+            return new ResponseEntity<>("Client deleted with ID: " + id, HttpStatus.NO_CONTENT);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
-
 }

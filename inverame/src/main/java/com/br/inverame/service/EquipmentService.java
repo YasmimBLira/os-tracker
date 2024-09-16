@@ -1,6 +1,9 @@
 package com.br.inverame.service;
 
 import com.br.inverame.config.Res;
+import com.br.inverame.model.entity.Equipment;
+import com.br.inverame.model.entity.ServiceOrder;
+import com.br.inverame.repository.EquipmentRepository;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.FileContent;
@@ -17,15 +20,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
+import java.util.*;
 
 @Service
 public class EquipmentService {
 
-    private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    private static final String SERVICE_ACOUNT_KEY_PATH = getPathToGoodleCredentials();
+    //private ServiceOrderRepository serviceOrderRepository;
+     private EquipmentService equipmentService;
+     private EquipmentRepository equipmentRepository;
 
-    private static String getPathToGoodleCredentials() {
+
+    private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+    private static final String SERVICE_ACOUNT_KEY_PATH = getPathToGoogleCredentials();
+
+    private static String getPathToGoogleCredentials() {
+        // Use barras duplas para caminhos no Windows ou barras normais para caminhos relativos
         return "C:\\Users\\thial\\OneDrive\\Área de Trabalho\\ostracker\\os-tracker\\credentials.json";
     }
 
@@ -79,5 +88,9 @@ public class EquipmentService {
             return fileName.substring(dotIndex);
         }
         return ""; // Retorna vazio se não houver extensão
+    }
+
+    public List<Equipment> findAll(){
+        return equipmentRepository.findAll();
     }
 }

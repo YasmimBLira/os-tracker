@@ -1,20 +1,18 @@
 package com.br.inverame.model.entity;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "client")
-public class Client {
-
+@Table
+public class Employee {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,26 +20,22 @@ public class Client {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "phone", nullable = false)
-    private String phone;
+    @Column(name = "user_name", nullable = false)
+    private String userName;
+
+    @Column(name = "e-mail", nullable = false)
+    private String email;
 
     @Column(name = "register_date", nullable = false)
     private LocalDateTime registerDate;
 
-    @Column(name = "cod_client", nullable = false)
-    private String codClient;
+    @Column(name = "Employee_Cod", nullable = false)
+    private String employeeCod;
 
-    @Column(name = "cnpj", nullable = false)
-    private String cnpj;
-
-    @OneToMany(mappedBy = "client")
-    private Set<Equipment> equipments;
-
-    // Getters and Setters
+    //Getters and Setters
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -49,48 +43,38 @@ public class Client {
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getUserName() {
+        return userName;
+    }
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public LocalDateTime getRegisterDate() {
         return registerDate;
     }
-
     public void setRegisterDate(LocalDateTime registerDate) {
         this.registerDate = registerDate;
     }
 
-    public String getCodClient() {
-        return codClient;
+    public String getEmployeeCod() {
+        return employeeCod;
+    }
+    public void setEmployeeCod(String employeeCod) {
+        this.employeeCod = employeeCod;
     }
 
-    public void setCodClient(String codClient) {
-        this.codClient = codClient;
-    }
-
-    public String getCnpj() {
-        return cnpj;
-    }
-
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
-    }
-
-    public Set<Equipment> getEquipments() {
-        return equipments;
-    }
-
-    public void setEquipments(Set<Equipment> equipments) {
-        this.equipments = equipments;
-    }
 }
+
+
