@@ -49,7 +49,7 @@ public class EmployeeController {
     }
     
     // mudança de rota de get 
-    @GetMapping("update/{id}")
+    @GetMapping("/update/{id}")
     public ResponseEntity<?> getEmployeeById(@PathVariable Long id) {
         Optional<Employee> employee = employeeService.getEmployeeById(id);
         if (employee.isPresent()) {
