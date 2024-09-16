@@ -56,8 +56,8 @@ public class Equipment {
     private String photoURL; // URL ou caminho da foto
 
     @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client; // Relação com a entidade Client
+    @JoinColumn(name = "client_id", nullable = true) // Permite valor nulo
+    private Client client;// Relação com a entidade Client
     
     // Getters and Setters
     public Long getId() {

@@ -20,9 +20,8 @@ import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
+import java.util.Optional;
 import java.util.stream.Collectors;
-
 
 @RestController
 @RequestMapping("api/equipments")
@@ -43,7 +42,7 @@ public class EquipmentController {
             @RequestParam("osNumber") int osNumber,
             @RequestParam("name") String name,
             @RequestParam(value = "responsiblePerson", required = false) String responsiblePerson,
-            @RequestParam(value = "serialNumber") String serialNumber,
+            @RequestParam("serialNumber") String serialNumber,
             @RequestParam("brand") String brand,
             @RequestParam("model") String model,
             @RequestParam("current") int current,
@@ -51,37 +50,48 @@ public class EquipmentController {
             @RequestParam("voltage") int voltage,
             @RequestParam("priorityLevel") String priorityLevel,
             @RequestParam(value = "lastOS", required = false) String lastOS,
-            @RequestParam("description") String description,
-            @RequestParam("clientId") Long clientId) throws IOException, GeneralSecurityException {
-
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "codClient", required = false) String codClient) throws IOException, GeneralSecurityException {
+    
+        // Verifica se o arquivo de imagem está vazio
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("O arquivo está vazio");
         }
+    
+        // Verifica se já existe um equipamento com o mesmo número de série
         if (equipmentRepository.existsBySerialNumber(serialNumber)) {
             return ResponseEntity.badRequest().body("Já existe um equipamento com o mesmo número de série.");
         }
-
+    
+        // Verifica se já existe um equipamento com o mesmo número da OS
         if (equipmentRepository.existsByOsNumber(osNumber)) {
             return ResponseEntity.badRequest().body("Já existe um equipamento com o mesmo número da OS.");
         }
-
-        // para tratar se ja existe.. e so adicinar um if e criar o metodo no
-        // repositorio igual o exemplo acima
-
-        // ===================================================
-        // deve ficar em baixo para não salvar se tiver erro
-        // ===================================================
+    
+        // Verifica se o cliente existe se codClient for fornecido
+        Client client = null;
+        if (codClient != null && !codClient.isEmpty()) {
+            Optional<Client> optionalClient = clientRepository.findByCodClient(codClient);
+            if (optionalClient.isPresent()) {
+                client = optionalClient.get();
+            } else {
+                return ResponseEntity.badRequest().body("Cliente não encontrado");
+            }
+        }
+    
+        // Salvar o arquivo temporariamente
         File tempFile = File.createTempFile("temp", null);
         file.transferTo(tempFile);
-
+    
+        // Tenta fazer o upload da imagem para o Google Drive
         String imageUrl = equipmentService.uploadImageToDrive(tempFile, serialNumber, name);
         if (imageUrl == null) {
+            // Se falhar, remove o arquivo temporário e retorna erro
+            tempFile.delete();
             return ResponseEntity.status(500).body("Erro ao enviar imagem para o Google Drive");
         }
-
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
-
+    
+        // Criar e salvar o equipamento com os dados fornecidos
         Equipment equipment = new Equipment();
         equipment.setOsNumber(osNumber);
         equipment.setName(name);
@@ -97,40 +107,41 @@ public class EquipmentController {
         equipment.setDescription(description);
         equipment.setPhotoURL(imageUrl);
         equipment.setRegistrationDate(LocalDateTime.now());
-        equipment.setClient(client);
-
+        equipment.setClient(client); // O cliente será null se não for fornecido
+    
         equipmentRepository.save(equipment);
+    
+        // Remove o arquivo temporário após o sucesso
+        tempFile.delete();
+    
         return ResponseEntity.ok("Equipamento salvo com sucesso");
     }
-
+    
     // ------------------------------Thailan--------------------------------
 
     // =============================LISTAR POR ID======================
 
     @GetMapping("/{id}")
-    public ResponseEntity<Equipment> getEquipmentById(@PathVariable Long id) {
-        return equipmentRepository.findById(id)
-                .map(equipment -> ResponseEntity.ok().body(equipment))
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<EquipmentDTO> getEquipmentById(@PathVariable Long id) {
+        Optional<Equipment> equipmentOpt = equipmentRepository.findById(id);
+        if (equipmentOpt.isPresent()) {
+            EquipmentDTO equipmentDTO = new EquipmentDTO(equipmentOpt.get());
+            return ResponseEntity.ok(equipmentDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // =============================LISTAR TODOS ======================
 
-
-   
-    
     @GetMapping
     public ResponseEntity<List<EquipmentDTO>> getAllEquipments() {
         List<Equipment> equipments = equipmentRepository.findAll();
         List<EquipmentDTO> equipmentDTOs = equipments.stream()
-            .map(EquipmentDTO::new) // Aqui usamos o construtor que você criou
-            .collect(Collectors.toList()); // Corrigido para usar Collectors.toList()
+                .map(EquipmentDTO::new)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(equipmentDTOs);
     }
-    
-
-
-
 
     // ================================ATUALIZAR POR ID=======================
     @PutMapping("/{id}")
@@ -153,7 +164,13 @@ public class EquipmentController {
                     equipment.setDescription(equipmentDetails.getDescription());
                     equipment.setPhotoURL(equipmentDetails.getPhotoURL());
                     equipment.setRegistrationDate(equipmentDetails.getRegistrationDate());
-                    equipment.setClient(equipmentDetails.getClient());
+
+                    if (equipmentDetails.getClient() != null) {
+                        Client client = clientRepository.findByCodClient(equipmentDetails.getClient().getCodClient())
+                                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                        equipment.setClient(client);
+                    }
+
                     Equipment updatedEquipment = equipmentRepository.save(equipment);
                     return ResponseEntity.ok(updatedEquipment);
                 })

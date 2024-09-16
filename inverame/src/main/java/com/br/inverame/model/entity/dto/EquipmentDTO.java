@@ -1,25 +1,28 @@
 package com.br.inverame.model.entity.dto;
 
-import java.time.LocalDateTime;
+
 import com.br.inverame.model.entity.Equipment;
+import java.time.LocalDateTime;
 
 public class EquipmentDTO {
+
     private Long id;
-    private int osNumber;
+    private Integer osNumber;
     private String name;
     private String serialNumber;
     private String brand;
     private String model;
-    private int current;
-    private int power;
-    private int voltage;
+    private Integer current;
+    private Integer power;
+    private Integer voltage;
     private String priorityLevel;
     private LocalDateTime registrationDate;
     private String lastOS;
     private String description;
     private String photoURL;
+    private String codClient; // Novo campo
 
-    // Construtor que recebe um Equipment
+    // Construtor, getters e setters
     public EquipmentDTO(Equipment equipment) {
         this.id = equipment.getId();
         this.osNumber = equipment.getOsNumber();
@@ -35,7 +38,11 @@ public class EquipmentDTO {
         this.lastOS = equipment.getLastOS();
         this.description = equipment.getDescription();
         this.photoURL = equipment.getPhotoURL();
-    }
+        if (equipment.getClient() != null) {
+            this.codClient = equipment.getClient().getCodClient(); // Definir codClient
+        }
+    }   
+
 
     // Getters e Setters
     public Long getId() { return id; }
@@ -66,4 +73,9 @@ public class EquipmentDTO {
     public void setDescription(String description) { this.description = description; }
     public String getPhotoURL() { return photoURL; }
     public void setPhotoURL(String photoURL) { this.photoURL = photoURL; }
-}
+    public String getCodClient() { return codClient; }
+    public void setCodClient(String codClient) { this.codClient = codClient; }
+        
+    }
+
+
