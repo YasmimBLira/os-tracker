@@ -22,6 +22,12 @@ public class EmployeeService {
         if (employeeRepository.existsByEmployeeCod(employee.getEmployeeCod())) {
             throw new IllegalArgumentException("Funcionário com este código já existe.");
         }
+        if (employeeRepository.existsByUserName(employee.getUserName())) {
+            throw new IllegalArgumentException("Funcionário com este nome de usuário já existe.");
+        }
+        if (employeeRepository.existsByEmail(employee.getEmail())) {
+            throw new IllegalArgumentException("Funcionário com este e-mail já existe.");
+        }
         return employeeRepository.save(employee);
     }
 
@@ -42,6 +48,12 @@ public class EmployeeService {
         }
         if (employeeRepository.existsByEmployeeCod(employee.getEmployeeCod()) && !employeeRepository.findByEmployeeCod(employee.getEmployeeCod()).get().getId().equals(id)) {
             throw new IllegalArgumentException("Funcionário com este código já existe.");
+        }
+        if (employeeRepository.existsByUserName(employee.getUserName()) && !employeeRepository.findByUserName(employee.getUserName()).get().getId().equals(id)) {
+            throw new IllegalArgumentException("Funcionário com este nome de usuário já existe.");
+        }
+        if (employeeRepository.existsByEmail(employee.getEmail()) && !employeeRepository.findByEmail(employee.getEmail()).get().getId().equals(id)) {
+            throw new IllegalArgumentException("Funcionário com este e-mail já existe.");
         }
         employee.setId(id);
         return employeeRepository.save(employee);
