@@ -1,17 +1,12 @@
 package com.br.inverame.model.entity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -36,10 +31,6 @@ public class Client {
 
     @Column(name = "cnpj", nullable = false)
     private String cnpj;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
-    private List<ServiceOrder> serviceOrder = new ArrayList<>();
 
     // Getters and Setters
     public Long getId() {
@@ -90,12 +81,5 @@ public class Client {
         this.cnpj = cnpj;
     }
 
-    public List<ServiceOrder> getServiceOrder() {
-        return serviceOrder;
-    }
-
-    public void setServiceOrder(List<ServiceOrder> serviceOrder) {
-        this.serviceOrder = serviceOrder;
-    }
 
 }
