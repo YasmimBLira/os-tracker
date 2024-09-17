@@ -26,8 +26,8 @@ public class Employee {
     @Column(name = "e-mail", nullable = false)
     private String email;
 
-    @Column(name = "register_date", nullable = false)
-    private LocalDateTime registerDate;
+    @Column(name = "registration_date", nullable = false)
+    private LocalDateTime registrationDate;
 
     @Column(name = "Employee_Cod", nullable = false)
     private String employeeCod;
@@ -61,11 +61,11 @@ public class Employee {
         this.email = email;
     }
 
-    public LocalDateTime getRegisterDate() {
-        return registerDate;
+    public LocalDateTime getRegistrationDate() {
+        return registrationDate;
     }
-    public void setRegisterDate(LocalDateTime registerDate) {
-        this.registerDate = registerDate;
+    public void setRegistrationDate(LocalDateTime registrationDate) {
+        this.registrationDate = registrationDate;
     }
 
     public String getEmployeeCod() {

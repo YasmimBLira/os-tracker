@@ -5,7 +5,7 @@ import com.br.inverame.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +28,10 @@ public class EmployeeService {
         if (employeeRepository.existsByEmail(employee.getEmail())) {
             throw new IllegalArgumentException("Funcionário com este e-mail já existe.");
         }
+
+        // Definir a data de registro automaticamente na entidade Employee
+        employee.setRegistrationDate(LocalDateTime.now());
+
         return employeeRepository.save(employee);
     }
 
