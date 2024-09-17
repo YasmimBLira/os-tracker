@@ -3,6 +3,8 @@ package com.br.inverame.model.entity;
 
 import java.time.LocalDateTime;
 
+import com.br.inverame.model.enums.Priority;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -13,17 +15,14 @@ public class Equipment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "os_number")
-    private int osNumber;
-
-    @Column(name = "name")
-    private String name;
-
-    @Column(name = "responsible_person")
-    private String responsiblePerson;
+    @Column(name = "equipment_name")
+    private String equipmentName;
 
     @Column(name = "serial_number")
     private String serialNumber;
+
+    @Column(name = "carrier")
+    private String carrier;
 
     @Column(name = "brand")
     private String brand;
@@ -40,14 +39,12 @@ public class Equipment {
     @Column(name = "voltage")
     private int voltage;
 
-    @Column(name = "priority_level")
-    private String priorityLevel;
-
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
 
-    @Column(name = "last_os")
-    private String lastOS;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Priority priority; // Obrigatório
 
     @Column(name = "description")
     private String description;
@@ -55,22 +52,12 @@ public class Equipment {
     @Column(name = "photo_url")
     private String photoURL; // URL ou caminho da foto
 
-    @ManyToOne
-    @JoinColumn(name = "client_id", nullable = true) // Permite valor nulo
-    private Client client;// Relação com a entidade Client
-    
     // Getters and Setters
     public Long getId() {
         return id;
     }
     public void setId(Long id) {
         this.id = id;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
     }
     public String getSerialNumber() {
         return serialNumber;
@@ -108,29 +95,11 @@ public class Equipment {
     public void setVoltage(int voltage) {
         this.voltage = voltage;
     }
-    public String getPriorityLevel() {
-        return priorityLevel;
-    }
-    public void setPriorityLevel(String priorityLevel) {
-        this.priorityLevel = priorityLevel;
-    }
-    public Client getClient() {
-        return client;
-    }
-    public void setClient(Client client) {
-        this.client = client;
-    }
     public LocalDateTime getRegistrationDate() {
         return registrationDate;
     }
     public void setRegistrationDate(LocalDateTime registrationDate) {
         this.registrationDate = registrationDate;
-    }
-    public String getLastOS() {
-        return lastOS;
-    }
-    public void setLastOS(String lastOS) {
-        this.lastOS = lastOS;
     }
     public String getDescription() {
         return description;
@@ -144,18 +113,23 @@ public class Equipment {
     public void setPhotoURL(String photoURL) {
         this.photoURL = photoURL;
     }
-    public int getOsNumber() {
-        return osNumber;
+    public String getCarrier() {
+        return carrier;
     }
-    public void setOsNumber(int osNumber) {
-        this.osNumber = osNumber;
+    public void setCarrier(String carrier) {
+        this.carrier = carrier;
     }
-    public String getResponsiblePerson() {
-        return responsiblePerson;
+    public Priority getPriority() {
+        return priority;
     }
-    public void setResponsiblePerson(String responsiblePerson) {
-        this.responsiblePerson = responsiblePerson;
+    public void setPriority(Priority priority) {
+        this.priority = priority;
     }
-
+    public String getEquipmentName() {
+        return equipmentName;
+    }
+    public void setEquipmentName(String equipmentName) {
+        this.equipmentName = equipmentName;
+    }
     
 }

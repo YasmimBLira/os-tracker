@@ -1,8 +1,6 @@
 package com.br.inverame.service;
 
-import com.br.inverame.config.Res;
 import com.br.inverame.model.entity.Equipment;
-import com.br.inverame.model.entity.ServiceOrder;
 import com.br.inverame.repository.EquipmentRepository;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -11,30 +9,29 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EquipmentService {
 
-    //private ServiceOrderRepository serviceOrderRepository;
-     private EquipmentService equipmentService;
-     private EquipmentRepository equipmentRepository;
-
+    @Autowired
+    private EquipmentRepository equipmentRepository;
 
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final String SERVICE_ACOUNT_KEY_PATH = getPathToGoogleCredentials();
 
     private static String getPathToGoogleCredentials() {
-        
+
         return "C:\\Users\\Setor(sem senha)\\Desktop\\os-tracker\\inverame\\credentials.json";
     }
 
@@ -90,7 +87,44 @@ public class EquipmentService {
         return ""; // Retorna vazio se não houver extensão
     }
 
-    public List<Equipment> findAll(){
+    
+    // Método para listar todos os equipamentos
+    public List<Equipment> findAll() {
         return equipmentRepository.findAll();
+    }
+
+    // Método para encontrar um equipamento por ID
+    public Optional<Equipment> findById(Long id) {
+        return equipmentRepository.findById(id);
+    }
+
+    // Método para atualizar um equipamento
+    public Equipment updateEquipment(Long id, Equipment equipmentDetails) {
+        return equipmentRepository.findById(id)
+                .map(equipment -> {
+                    equipment.setEquipmentName(equipmentDetails.getEquipmentName());
+                    equipment.setSerialNumber(equipmentDetails.getSerialNumber());
+                    equipment.setCarrier(equipmentDetails.getCarrier());
+                    equipment.setBrand(equipmentDetails.getBrand());
+                    equipment.setModel(equipmentDetails.getModel());
+                    equipment.setCurrent(equipmentDetails.getCurrent());
+                    equipment.setPower(equipmentDetails.getPower());
+                    equipment.setVoltage(equipmentDetails.getVoltage());
+                    equipment.setPriority(equipmentDetails.getPriority());
+                    equipment.setDescription(equipmentDetails.getDescription());
+                    equipment.setPhotoURL(equipmentDetails.getPhotoURL());
+                    equipment.setRegistrationDate(equipmentDetails.getRegistrationDate());
+
+                    return equipmentRepository.save(equipment);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Equipment with ID " + id + " not found"));
+    }
+
+    // Método para deletar um equipamento
+    public void deleteEquipment(Long id) {
+        if (!equipmentRepository.existsById(id)) {
+            throw new IllegalArgumentException("Equipment with ID " + id + " not found");
+        }
+        equipmentRepository.deleteById(id);
     }
 }

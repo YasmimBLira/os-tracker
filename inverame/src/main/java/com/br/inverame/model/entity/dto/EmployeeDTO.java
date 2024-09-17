@@ -6,7 +6,7 @@ import com.br.inverame.model.entity.Employee;
 public class EmployeeDTO {
     private Long id;
     private String name;
-    private LocalDateTime registerDate;
+    private LocalDateTime registrationDate;
     private String employeeCod;
     private String userName;
     private String email;
@@ -15,7 +15,7 @@ public class EmployeeDTO {
     public EmployeeDTO(Employee employee) {
         this.id = employee.getId();
         this.name = employee.getName();
-        this.registerDate = employee.getRegisterDate();
+        this.registrationDate = employee.getRegistrationDate();
         this.employeeCod = employee.getEmployeeCod();
         this.userName = employee.getUserName();
         this.email = employee.getEmail();
@@ -26,8 +26,8 @@ public class EmployeeDTO {
     public void setId(Long id) { this.id = id; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-    public LocalDateTime getRegisterDate() { return registerDate; }
-    public void setRegisterDate(LocalDateTime registerDate) { this.registerDate = registerDate; }
+    public LocalDateTime getRegistrationDate() { return registrationDate; }
+    public void setRegistrationDate(LocalDateTime registrationDate) { this.registrationDate = registrationDate; }
     public String getEmployeeCod() { return employeeCod; }
     public void setEmployeeCod(String employeeCod) { this.employeeCod = employeeCod; }
     public String getUserName() { return userName; }
