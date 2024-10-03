@@ -10,6 +10,8 @@ public class EmployeeDTO {
     private String employeeCod;
     private String userName;
     private String email;
+    
+
 
     // Construtor que recebe um Employee
     public EmployeeDTO(Employee employee) {
