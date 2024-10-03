@@ -20,7 +20,7 @@ public class Client {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "phone", nullable = false)
+    @Column(name = "phone")
     private String phone;
 
     @Column(name = "register_date", nullable = false)
@@ -33,53 +33,23 @@ public class Client {
     private String cnpj;
 
     // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    public Long getId() {return id;}
+    public void setId(Long id) {this.id = id;}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getName() {return name;}
+    public void setName(String name) {this.name = name;}
 
-    public String getName() {
-        return name;
-    }
+    public String getPhone() {return phone;}
+    public void setPhone(String phone) {this.phone = phone;}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public LocalDateTime getRegisterDate() {return registerDate;}
+    public void setRegisterDate(LocalDateTime registerDate) {this.registerDate = registerDate;}
 
-    public String getPhone() {
-        return phone;
-    }
+    public String getCodClient() {return codClient;}
+    public void setCodClient(String codClient) {this.codClient = codClient;}
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public LocalDateTime getRegisterDate() {
-        return registerDate;
-    }
-
-    public void setRegisterDate(LocalDateTime registerDate) {
-        this.registerDate = registerDate;
-    }
-
-    public String getCodClient() {
-        return codClient;
-    }
-
-    public void setCodClient(String codClient) {
-        this.codClient = codClient;
-    }
-
-    public String getCnpj() {
-        return cnpj;
-    }
-
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
-    }
+    public String getCnpj() {return cnpj;}
+    public void setCnpj(String cnpj) {this.cnpj = cnpj;}
 
 
 }

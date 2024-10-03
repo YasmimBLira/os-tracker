@@ -12,6 +12,3 @@ public static void main(String[] args) {
 
 }
 
-//Larissa
-//Thailan
-//Thialy

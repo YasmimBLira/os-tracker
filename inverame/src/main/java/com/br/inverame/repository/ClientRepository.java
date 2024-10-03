@@ -1,10 +1,11 @@
 package com.br.inverame.repository;
 
-import com.br.inverame.model.entity.Client;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import com.br.inverame.model.entity.Client;
 
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long> {
@@ -13,7 +14,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     boolean existsByCodClient(String codClient);
 
     Optional<Client> findByName(String name);
-    Optional<Client> findByCnpj(String cnpj);
+    Optional<Client> deleteByCnpj(String cnpj);
     Optional<Client> findByCodClient(String codClient);
-    Optional<Client> findById(Client client);
+    Optional<Client> findByCnpj(String cnpj);
 }

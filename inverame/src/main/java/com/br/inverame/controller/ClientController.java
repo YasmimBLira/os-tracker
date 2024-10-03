@@ -20,7 +20,7 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<String> createClient(@RequestBody @Valid Client client) {
         try {
             Client savedClient = clientService.saveClient(client);
@@ -30,7 +30,7 @@ public class ClientController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<Client>> getAllClients() {
         List<Client> clients = clientService.findAll();
         return new ResponseEntity<>(clients, HttpStatus.OK);
