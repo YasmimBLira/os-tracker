@@ -8,7 +8,7 @@ CREATE TABLE client (
   name VARCHAR(255) NOT NULL,
   phone VARCHAR(255) ,
   register_date DATETIME(6) NOT NULL,
-  PRIMARY KEY (id),
+  PRIMARY KEY (id, cnpj),
   UNIQUE (cnpj),             -- CNPJ deve ser único
   UNIQUE (cod_client),       -- Código do cliente deve ser único
   UNIQUE (name)              -- Nome do cliente deve ser único     
