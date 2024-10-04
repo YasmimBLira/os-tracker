@@ -40,8 +40,8 @@ public class ClientController {
     }
 
     // exemplo: http://localhost:8080/api/clients/cnpj?cnpj=80.665.555/0001-00
-    @GetMapping("/cnpj")
-    public ResponseEntity<?> getClientByCnpj(@RequestParam String cnpj) {
+    @GetMapping("/cnpj/{cnpj}")
+    public ResponseEntity<?> getClientByCnpj(@PathVariable String cnpj) {
         Optional<Client> client = clientService.findByCnpj(cnpj);
         if (client.isPresent()) {
             return new ResponseEntity<>(client.get(), HttpStatus.OK);
@@ -83,8 +83,8 @@ public class ClientController {
     }
 
     // Atualizar cliente por CNPJ
-    @PutMapping("/cnpj")
-    public ResponseEntity<String> updateClientByCnpj(@RequestParam String cnpj,
+    @PutMapping("/cnpj/{cnpj}")
+    public ResponseEntity<String> updateClientByCnpj(@PathVariable String cnpj,
             @RequestBody ClientUpdateDTO clientUpdateDTO) {
         try {
             Client updatedClient = clientService.updateClientByCnpj(cnpj, clientUpdateDTO);
@@ -104,9 +104,9 @@ public class ClientController {
         }
     }
 
-//  exemplo: http://localhost:8080/api/clients/cnpj?cnpj=80.665.555/0001-00
-    @DeleteMapping("/cnpj")
-    public ResponseEntity<String> deleteClient(@RequestParam String cnpj) {
+//  exemplo: http://localhost:8080/api/clients/cnpj/80665555000100
+    @DeleteMapping("/cnpj/{cnpj}")
+    public ResponseEntity<String> deleteClient(@PathVariable String cnpj) {
         try {
             clientService.deleteClientByCnpj(cnpj);
             return new ResponseEntity<>("Cliente com CNPJ " + cnpj + " foi deletado com sucesso.", HttpStatus.OK);
