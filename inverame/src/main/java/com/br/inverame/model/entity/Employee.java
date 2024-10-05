@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table
+@Table(name = "employees")
 public class Employee {
     
     @Id
@@ -29,7 +29,7 @@ public class Employee {
     @Column(name = "registration_date", nullable = false)
     private LocalDateTime registrationDate;
 
-    @Column(name = "Employee_Cod", nullable = false)
+    @Column(name = "employee_cod", nullable = false)
     private String employeeCod;
 
     //Getters and Setters
