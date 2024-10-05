@@ -39,7 +39,7 @@ public class ClientController {
         return new ResponseEntity<>(clients, HttpStatus.OK);
     }
 
-    // exemplo: http://localhost:8080/api/clients/cnpj?cnpj=80.665.555/0001-00
+    // exemplo: http://localhost:8080/api/clients/cnpj/80665555000100
     @GetMapping("/cnpj/{cnpj}")
     public ResponseEntity<?> getClientByCnpj(@PathVariable String cnpj) {
         Optional<Client> client = clientService.findByCnpj(cnpj);
