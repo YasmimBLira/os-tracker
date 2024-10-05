@@ -1,6 +1,6 @@
 package com.br.inverame.model.enums;
 
-public enum Cargo {
+public enum Role {
     adm,
-    comum,
+    normal,
 }
