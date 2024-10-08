@@ -84,7 +84,6 @@ public class Equipment {
     @Column(nullable = false)
     private Choice fan_carcass; 
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = true)
     private String others; 
 
