@@ -111,7 +111,6 @@ public class EquipmentService {
                     equipment.setPower(equipmentDetails.getPower());
                     equipment.setVoltage(equipmentDetails.getVoltage());
                     equipment.setPriority(equipmentDetails.getPriority());
-                    equipment.setDescription(equipmentDetails.getDescription());
                     equipment.setPhotoURL(equipmentDetails.getPhotoURL());
                     equipment.setRegistrationDate(equipmentDetails.getRegistrationDate());
 

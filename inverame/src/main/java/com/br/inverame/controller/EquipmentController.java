@@ -77,7 +77,6 @@ public class EquipmentController {
         equipment.setPower(power);
         equipment.setVoltage(voltage);
         equipment.setPriority(priority);
-        equipment.setDescription(description);
         equipment.setPhotoURL(imageUrl);
         equipment.setRegistrationDate(LocalDateTime.now());
     
@@ -125,7 +124,6 @@ public class EquipmentController {
                     equipment.setPower(equipmentDetails.getPower());
                     equipment.setVoltage(equipmentDetails.getVoltage());
                     equipment.setPriority(equipmentDetails.getPriority());
-                    equipment.setDescription(equipmentDetails.getDescription());
                     equipment.setPhotoURL(equipmentDetails.getPhotoURL());
                     equipment.setRegistrationDate(equipmentDetails.getRegistrationDate());
 
