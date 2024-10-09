@@ -1,25 +1,32 @@
 package com.br.inverame.service;
 
-import com.br.inverame.model.entity.Equipment;
-import com.br.inverame.repository.EquipmentRepository;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.FileContent;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.DriveScopes;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.security.GeneralSecurityException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.nio.file.Files;
+
+import com.br.inverame.model.entity.Equipment;
+import com.br.inverame.model.entity.dto.EquipmentUpdateDTO;
+import com.br.inverame.repository.EquipmentRepository;
+
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.http.FileContent;
+import com.google.api.services.drive.Drive;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.services.drive.DriveScopes;
+
+import jakarta.persistence.EntityNotFoundException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.security.GeneralSecurityException;
 
 @Service
 public class EquipmentService {
@@ -31,8 +38,58 @@ public class EquipmentService {
     private static final String SERVICE_ACOUNT_KEY_PATH = getPathToGoogleCredentials();
 
     private static String getPathToGoogleCredentials() {
-        // Use barras duplas para caminhos no Windows ou barras normais para caminhos relativos
-        return "os-tracker\\credentials.json";
+        return "C:\\Users\\thial\\OneDrive\\Área de Trabalho\\ostracker\\os-tracker\\credentials.json";
+    }
+
+    public Equipment saveEquipment(Equipment equipment, File imageFile) throws GeneralSecurityException, IOException {
+        // Verifica se um equipamento com o número de série já existe
+        if (equipmentRepository.findBySerialNumber(equipment.getSerialNumber()).isPresent()) {
+            throw new IllegalArgumentException("Equipment with this serial number already exists.");
+        }
+   
+        // Define a data de registro automaticamente
+        equipment.setRegistrationDate(LocalDateTime.now());
+
+        // Faz upload da imagem e obtém a URL
+        String imageUrl = uploadImageToDrive(imageFile, equipment.getSerialNumber(), equipment.getEquipmentName());
+        equipment.setPhotoURL(imageUrl); // Armazena a URL da imagem no equipamento
+
+        return equipmentRepository.save(equipment);
+    }
+
+    public Equipment updateEquipment(String serialNumber, EquipmentUpdateDTO equipmentUpdateDTO, File imageFile) throws GeneralSecurityException, IOException {
+        Equipment existingEquipment = equipmentRepository.findBySerialNumber(serialNumber)
+                .orElseThrow(() -> new IllegalArgumentException("Equipment with this serial number does not exist."));
+
+        // Atualiza todos os campos permitidos
+        existingEquipment.setSerialNumber(equipmentUpdateDTO.getSerialNumber());
+        existingEquipment.setEquipmentName(equipmentUpdateDTO.getEquipmentName());
+        existingEquipment.setCarrier(equipmentUpdateDTO.getCarrier());
+        existingEquipment.setReceiver(equipmentUpdateDTO.getReceiver());
+        existingEquipment.setEnterprise_name(equipmentUpdateDTO.getEnterprise_name());
+        existingEquipment.setBrand(equipmentUpdateDTO.getBrand());
+        existingEquipment.setModel(equipmentUpdateDTO.getModel());
+        existingEquipment.setCurrent(equipmentUpdateDTO.getCurrent());
+        existingEquipment.setPower(equipmentUpdateDTO.getPower());
+        existingEquipment.setVoltage(equipmentUpdateDTO.getVoltage());
+        existingEquipment.setPriority(equipmentUpdateDTO.getPriority());
+
+        // Faz upload da imagem se fornecida
+        if (imageFile != null) {
+            String imageUrl = uploadImageToDrive(imageFile, serialNumber, existingEquipment.getEquipmentName());
+            existingEquipment.setPhotoURL(imageUrl); // Atualiza a URL da imagem no equipamento
+        }
+
+        existingEquipment.setConnectors(equipmentUpdateDTO.getConnectors());
+        existingEquipment.setIhm(equipmentUpdateDTO.getIhm());
+        existingEquipment.setCarcass_damage(equipmentUpdateDTO.getCarcass_damage());
+        existingEquipment.setEngine(equipmentUpdateDTO.getEngine());
+        existingEquipment.setEngine_cables(equipmentUpdateDTO.getEngine_cables());
+        existingEquipment.setFan(equipmentUpdateDTO.getFan());
+        existingEquipment.setFan_carcass(equipmentUpdateDTO.getFan_carcass());
+        existingEquipment.setOthers(equipmentUpdateDTO.getOthers());
+
+        return equipmentRepository.save(existingEquipment);
     }
 
     public String uploadImageToDrive(File file, String serialNumber, String equipmentName) throws GeneralSecurityException, IOException {
@@ -61,7 +118,7 @@ public class EquipmentService {
             imageUrl = "https://drive.google.com/uc?export=view&id=" + uploadedFile.getId();
             file.delete();
         } catch (Exception e) {
-            e.printStackTrace(); // Adiciona mais detalhes ao stack trace
+            e.printStackTrace();
             throw new IOException("Error uploading image to Google Drive: " + e.getMessage(), e);
         }
         return imageUrl;
@@ -78,7 +135,6 @@ public class EquipmentService {
                 .build();
     }
 
-    // Método auxiliar para obter a extensão do arquivo
     private String getFileExtension(String fileName) {
         int dotIndex = fileName.lastIndexOf('.');
         if (dotIndex > 0) {
@@ -87,43 +143,21 @@ public class EquipmentService {
         return ""; // Retorna vazio se não houver extensão
     }
 
-    
-    // Método para listar todos os equipamentos
+    // Método para buscar equipamento pelo número de série
+    public Optional<Equipment> findBySerialNumber(String serialNumber) {
+        return equipmentRepository.findBySerialNumber(serialNumber);
+    }
+
+    // Método para buscar todos os equipamentos
     public List<Equipment> findAll() {
         return equipmentRepository.findAll();
     }
 
-    // Método para encontrar um equipamento por ID
-    public Optional<Equipment> findById(Long id) {
-        return equipmentRepository.findById(id);
-    }
-
-    // Método para atualizar um equipamento
-    public Equipment updateEquipment(Long id, Equipment equipmentDetails) {
-        return equipmentRepository.findById(id)
-                .map(equipment -> {
-                    equipment.setEquipmentName(equipmentDetails.getEquipmentName());
-                    equipment.setSerialNumber(equipmentDetails.getSerialNumber());
-                    equipment.setCarrier(equipmentDetails.getCarrier());
-                    equipment.setBrand(equipmentDetails.getBrand());
-                    equipment.setModel(equipmentDetails.getModel());
-                    equipment.setCurrent(equipmentDetails.getCurrent());
-                    equipment.setPower(equipmentDetails.getPower());
-                    equipment.setVoltage(equipmentDetails.getVoltage());
-                    equipment.setPriority(equipmentDetails.getPriority());
-                    equipment.setPhotoURL(equipmentDetails.getPhotoURL());
-                    equipment.setRegistrationDate(equipmentDetails.getRegistrationDate());
-
-                    return equipmentRepository.save(equipment);
-                })
-                .orElseThrow(() -> new IllegalArgumentException("Equipment with ID " + id + " not found"));
-    }
-
-    // Método para deletar um equipamento
-    public void deleteEquipment(Long id) {
-        if (!equipmentRepository.existsById(id)) {
-            throw new IllegalArgumentException("Equipment with ID " + id + " not found");
+    // Método para deletar equipamento pelo número de série
+    public void deleteBySerialNumber(String serialNumber) {
+        if (!equipmentRepository.findBySerialNumber(serialNumber).isPresent()) {
+            throw new EntityNotFoundException("Equipment with this serial number does not exist.");
         }
-        equipmentRepository.deleteById(id);
+        equipmentRepository.deleteBySerialNumber(serialNumber);
     }
 }
