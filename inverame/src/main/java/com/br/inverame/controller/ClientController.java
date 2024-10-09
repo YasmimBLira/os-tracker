@@ -5,17 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.br.inverame.model.entity.Client;
 import com.br.inverame.model.entity.dto.ClientUpdateDTO;
@@ -30,22 +25,29 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
+    // Criação de cliente com Map<String, Object>
     @PostMapping("/create")
-public ResponseEntity<Map<String, Object>> createClient(@RequestBody Client client) {
-    // Lógica para criar o cliente
-    Map<String, Object> response = new HashMap<>();
-    response.put("message", "Client created successfully");
-    response.put("clientId", client.getId());
-    return ResponseEntity.status(HttpStatus.CREATED).body(response);
-}
+    public ResponseEntity<Map<String, Object>> createClient(@RequestBody @Valid Client client) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Client savedClient = clientService.saveClient(client);
+            response.put("message", "Client created successfully");
+            response.put("clientId", savedClient.getId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (IllegalArgumentException e) {
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
 
+    // Retorna todos os clientes
     @GetMapping("/all")
     public ResponseEntity<List<Client>> getAllClients() {
         List<Client> clients = clientService.findAll();
         return new ResponseEntity<>(clients, HttpStatus.OK);
     }
 
-    // exemplo: http://localhost:8080/api/clients/cnpj/80665555000100
+    // Buscar cliente por CNPJ
     @GetMapping("/cnpj/{cnpj}")
     public ResponseEntity<?> getClientByCnpj(@PathVariable String cnpj) {
         Optional<Client> client = clientService.findByCnpj(cnpj);
@@ -56,7 +58,7 @@ public ResponseEntity<Map<String, Object>> createClient(@RequestBody Client clie
         }
     }
 
-    // exemplo: http://localhost:8080/api/clients/name/Empresa Y
+    // Buscar cliente por nome
     @GetMapping("/name/{name}")
     public ResponseEntity<?> getClientByName(@PathVariable String name) {
         Optional<Client> client = clientService.findByName(name);
@@ -67,6 +69,7 @@ public ResponseEntity<Map<String, Object>> createClient(@RequestBody Client clie
         }
     }
 
+    // Buscar cliente por ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getClientById(@PathVariable Long id) {
         Optional<Client> client = clientService.findById(id);
@@ -77,47 +80,62 @@ public ResponseEntity<Map<String, Object>> createClient(@RequestBody Client clie
         }
     }
 
-    // Atualizar cliente por ID
+    // Atualizar cliente por ID com Map<String, Object>
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateClient(@PathVariable Long id, @RequestBody ClientUpdateDTO clientUpdateDTO) {
+    public ResponseEntity<Map<String, Object>> updateClient(@PathVariable Long id, @RequestBody ClientUpdateDTO clientUpdateDTO) {
+        Map<String, Object> response = new HashMap<>();
         try {
             Client updatedClient = clientService.updateClient(id, clientUpdateDTO);
-            return new ResponseEntity<>("Client updated with ID: " + updatedClient.getId(), HttpStatus.OK);
+            response.put("message", "Client updated successfully");
+            response.put("clientId", updatedClient.getId());
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
-    // Atualizar cliente por CNPJ
+    // Atualizar cliente por CNPJ com Map<String, Object>
     @PutMapping("/cnpj/{cnpj}")
-    public ResponseEntity<String> updateClientByCnpj(@PathVariable String cnpj,
-            @RequestBody ClientUpdateDTO clientUpdateDTO) {
+    public ResponseEntity<Map<String, Object>> updateClientByCnpj(@PathVariable String cnpj, @RequestBody ClientUpdateDTO clientUpdateDTO) {
+        Map<String, Object> response = new HashMap<>();
         try {
             Client updatedClient = clientService.updateClientByCnpj(cnpj, clientUpdateDTO);
-            return new ResponseEntity<>("Client updated with CNPJ: " + updatedClient.getCnpj(), HttpStatus.OK);
+            response.put("message", "Client updated successfully");
+            response.put("clientCnpj", updatedClient.getCnpj());
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
+    // Deletar cliente por ID com Map<String, Object>
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteClient(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> deleteClient(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
         try {
             clientService.deleteById(id);
-            return new ResponseEntity<>("Client deleted with ID: " + id, HttpStatus.NO_CONTENT);
+            response.put("message", "Client deleted successfully");
+            response.put("clientId", id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
 
-//  exemplo: http://localhost:8080/api/clients/cnpj/80665555000100
+    // Deletar cliente por CNPJ com Map<String, Object>
     @DeleteMapping("/cnpj/{cnpj}")
-    public ResponseEntity<String> deleteClient(@PathVariable String cnpj) {
+    public ResponseEntity<Map<String, Object>> deleteClient(@PathVariable String cnpj) {
+        Map<String, Object> response = new HashMap<>();
         try {
             clientService.deleteClientByCnpj(cnpj);
-            return new ResponseEntity<>("Cliente com CNPJ " + cnpj + " foi deletado com sucesso.", HttpStatus.OK);
+            response.put("message", "Client with CNPJ " + cnpj + " was successfully deleted.");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
 
