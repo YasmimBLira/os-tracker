@@ -1,17 +1,23 @@
 package com.br.inverame.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.time.LocalDateTime;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.br.inverame.model.entity.Client;
 import com.br.inverame.model.entity.Equipment;
 import com.br.inverame.model.entity.ServiceOrder;
-import com.br.inverame.repository.ServiceOrderRepository;
-import com.br.inverame.repository.EquipmentRepository;
+import com.br.inverame.model.entity.dto.ServiceOrderDTO;
+import com.br.inverame.model.mapper.ServiceOrderMapper;
 import com.br.inverame.repository.ClientRepository;
+import com.br.inverame.repository.EquipmentRepository;
+import com.br.inverame.repository.ServiceOrderRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class ServiceOrderService {
@@ -25,60 +31,89 @@ public class ServiceOrderService {
     @Autowired
     private EquipmentRepository equipmentRepository;
 
-    public List<ServiceOrder> findAll() {
-        return serviceOrderRepository.findAll();
-    }
+    @Autowired
+    private ServiceOrderMapper serviceOrderMapper;
 
-    public Optional<ServiceOrder> findById(Long id) {
-        return serviceOrderRepository.findById(id);
-    }
+    @Transactional
+    public ServiceOrderDTO createServiceOrder(ServiceOrderDTO dto) {
+        Client client = clientRepository.findByCodClient(dto.getCodClient())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Cliente não encontrado com o código: " + dto.getCodClient()));
 
-    public ServiceOrder createServiceOrder(Long clientId, Long equipmentId, ServiceOrder serviceOrder) {
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        // Verifica se o equipamento existe
+        Equipment equipment = equipmentRepository.findBySerialNumber(dto.getEquipmentSerialNumber())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Equipamento não encontrado com o número de série: " + dto.getEquipmentSerialNumber()));
 
-        Equipment equipment = equipmentRepository.findById(equipmentId)
-                .orElseThrow(() -> new RuntimeException("Equipment não encontrado"));
+        // Mapeia o DTO para a entidade ServiceOrder
+        ServiceOrder serviceOrder = serviceOrderMapper.mapToEntity(dto);
 
-        serviceOrder.setClient(client);
-        serviceOrder.setEquipment(equipment);
+        // Define as referências do cliente e equipamento
+        serviceOrder.setCodClient(client);
+        serviceOrder.setEquipmentSerialNumber(equipment);
 
-        // Define a data de registro automaticamente
-        serviceOrder.setRegistrationDate(LocalDateTime.now());
+        // Define a data de registro com base na data do equipamento
+        serviceOrder.setRegistrationDate(equipment.getRegistrationDate());
 
-        return serviceOrderRepository.save(serviceOrder);
-    }
-
-    public ServiceOrder updateServiceOrder(Long id, Long equipmentId, ServiceOrder serviceOrder) {
-        // Check if the ServiceOrder exists
-        Optional<ServiceOrder> existingServiceOrder = serviceOrderRepository.findById(id);
-
-        if (existingServiceOrder.isPresent()) {
-            // Retrieve the existing ServiceOrder
-            ServiceOrder updatedServiceOrder = existingServiceOrder.get();
-
-            // Update the fields
-            updatedServiceOrder.setResponsible(serviceOrder.getResponsible());
-            updatedServiceOrder.setOsNumber(serviceOrder.getOsNumber());
-            updatedServiceOrder.setNf_e(serviceOrder.getNf_e());
-            updatedServiceOrder.setEquipment(serviceOrder.getEquipment());
-            updatedServiceOrder.setRegistrationDate(serviceOrder.getRegistrationDate());
-
-            // Update the client if provided
-            if (serviceOrder.getClient() != null) {
-                Client client = clientRepository.findById(serviceOrder.getClient().getId())
-                        .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
-                updatedServiceOrder.setClient(client);
-            }
-
-            // Save the updated ServiceOrder
-            return serviceOrderRepository.save(updatedServiceOrder);
-        } else {
-            throw new RuntimeException("ServiceOrder not found");
+        // Verificar se já existe uma ordem de serviço com o mesmo osNumber
+        if (serviceOrderRepository.existsByOsNumber(serviceOrder.getOsNumber())) {
+            throw new IllegalArgumentException("O número da ordem de serviço já existe: " + serviceOrder.getOsNumber());
         }
+
+        // Salva a ordem de serviço no repositório
+        serviceOrder = serviceOrderRepository.save(serviceOrder);
+
+        // Mapeia a entidade de volta para DTO e retorna
+        return serviceOrderMapper.mapToDTO(serviceOrder);
     }
 
-    public void deleteById(Long id) {
-        serviceOrderRepository.deleteById(id);
+    public List<ServiceOrderDTO> findAll() {
+        return serviceOrderRepository.findAll().stream()
+                .map(serviceOrderMapper::mapToDTO)
+                .collect(Collectors.toList());
     }
+
+    public Optional<ServiceOrderDTO> findByOsNumber(String osNumber) {
+        return serviceOrderRepository.findByOsNumber(osNumber)
+                .map(serviceOrderMapper::mapToDTO);
+    }
+
+    @Transactional
+    public void deleteServiceOrderByOsNumber(String osNumber) {
+        if (!serviceOrderRepository.existsByOsNumber(osNumber)) {
+            throw new IllegalArgumentException("Service order not found with OS number: " + osNumber);
+        }
+        serviceOrderRepository.deleteByOsNumber(osNumber);
+    }
+
+    @Transactional
+    public ServiceOrderDTO updateServiceOrder(String osNumber, ServiceOrderDTO dto) {
+        // Verifica se a ordem de serviço existe
+        ServiceOrder existingOrder = serviceOrderRepository.findByOsNumber(osNumber)
+                .orElseThrow(() -> new IllegalArgumentException("Ordem de serviço não encontrada com número: " + osNumber));
+
+        // Verifica se o cliente existe
+        Client client = clientRepository.findByCodClient(dto.getCodClient())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Cliente não encontrado com o código: " + dto.getCodClient()));
+
+        // Verifica se o equipamento existe
+        Equipment equipment = equipmentRepository.findBySerialNumber(dto.getEquipmentSerialNumber())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Equipamento não encontrado com o número de série: " + dto.getEquipmentSerialNumber()));
+
+        // Atualiza os campos da ordem de serviço existente
+        existingOrder.setResponsible(dto.getResponsible());
+        existingOrder.setCodClient(client);
+        existingOrder.setNfe(dto.getNfe());
+        existingOrder.setEquipmentSerialNumber(equipment);
+        existingOrder.setLocalization(dto.getLocalization());
+
+        // Salva a ordem de serviço atualizada no repositório
+        existingOrder = serviceOrderRepository.save(existingOrder);
+
+        // Mapeia a entidade de volta para DTO e retorna
+        return serviceOrderMapper.mapToDTO(existingOrder);
+    }
+
 }
