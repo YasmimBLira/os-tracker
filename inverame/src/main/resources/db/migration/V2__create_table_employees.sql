@@ -1,8 +1,7 @@
-
 CREATE TABLE equipment (
-    id BIGINT NOT NULL AUTO_INCREMENT,
+    id SERIAL PRIMARY KEY,
     equipment_name VARCHAR(255) NOT NULL,
-    serial_number VARCHAR(255) NOT NULL,
+    serial_number VARCHAR(255) NOT NULL UNIQUE,
     carrier VARCHAR(255) NOT NULL,
     receiver VARCHAR(255) NOT NULL,
     enterprise_name VARCHAR(255) NOT NULL,
@@ -11,17 +10,15 @@ CREATE TABLE equipment (
     current INT NOT NULL,
     power INT NOT NULL,
     voltage INT NOT NULL,
-    registration_date DATETIME(6) NOT NULL,
-    priority ENUM('A', 'B', 'C') NOT NULL,
+    registration_date TIMESTAMP NOT NULL,
+    priority VARCHAR(1) NOT NULL CHECK (priority IN ('A', 'B', 'C')),
     photo_url VARCHAR(255),
-    connectors ENUM('SIM', 'NAO') NOT NULL,
-    ihm ENUM('SIM', 'NAO') NOT NULL,
-    carcass_damage ENUM('SIM', 'NAO') NOT NULL,
-    engine ENUM('SIM', 'NAO') NOT NULL,
-    engine_cables ENUM('SIM', 'NAO') NOT NULL,
-    fan ENUM('SIM', 'NAO') NOT NULL,
-    fan_carcass ENUM('SIM', 'NAO') NOT NULL,
-    others VARCHAR(255),
-    PRIMARY KEY (id, serial_number),
-    UNIQUE (serial_number)
+    connectors VARCHAR(3) NOT NULL CHECK (connectors IN ('SIM', 'NAO')),
+    ihm VARCHAR(3) NOT NULL CHECK (ihm IN ('SIM', 'NAO')),
+    carcass_damage VARCHAR(3) NOT NULL CHECK (carcass_damage IN ('SIM', 'NAO')),
+    engine VARCHAR(3) NOT NULL CHECK (engine IN ('SIM', 'NAO')),
+    engine_cables VARCHAR(3) NOT NULL CHECK (engine_cables IN ('SIM', 'NAO')),
+    fan VARCHAR(3) NOT NULL CHECK (fan IN ('SIM', 'NAO')),
+    fan_carcass VARCHAR(3) NOT NULL CHECK (fan_carcass IN ('SIM', 'NAO')),
+    others VARCHAR(255)
 );
