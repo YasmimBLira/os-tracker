@@ -2,8 +2,12 @@ package com.br.inverame.model.entity;
 
 import java.time.LocalDateTime;
 
+import com.br.inverame.model.enums.Localization;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,49 +16,53 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "service_order")
+@Table(name = "service_orders")
 public class ServiceOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id; // Renomeado para id para maior clareza
+    private long id; 
 
-    @Column(nullable = false)
+    @Column(name = "responsible", nullable = false)
     private String responsible; // Obrigatório
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "os_number", nullable = false, unique = true)
     private String osNumber; // Obrigatório
 
-    @Column(nullable = true)
-    private String nf_e; // Opcional
+    @Column(name = "nfe", nullable = true)
+    private String nfe; // Opcional
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime registrationDate; // Obrigatório, deve ser feito de forma automática (retirar)
-
-    @ManyToOne
-    @JoinColumn(name = "client_id", nullable = true)
-    private Client client;
+    @Column(name = "registration_date", nullable = false)
+    private LocalDateTime registrationDate; // Atualizado para LocalDateTime
 
     @ManyToOne
-    @JoinColumn(name = "equipment_id") // Nome da coluna que será adicionada na tabela service_order
-    private Equipment equipment;
+    @JoinColumn(name = "cod_client", referencedColumnName = "cod_client")
+    private Client codClient; // Atualizado para seguir convenção de nomenclatura
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "localization", nullable = false)
+    private Localization localization;
+
+    @ManyToOne
+    @JoinColumn(name = "equipment_serial_number", referencedColumnName = "serial_number")
+    private Equipment equipmentSerialNumber; // Atualizado para seguir convenção de nomenclatura
 
     public ServiceOrder() {
         // Construtor padrão
     }
 
-    public ServiceOrder(long id, String responsible, String osNumber, String nf_e, LocalDateTime registrationDate,
-            Client client, Equipment equipment) {
+    public ServiceOrder(long id, String responsible, String osNumber, String nfe, LocalDateTime registrationDate,
+            Client codClient, Localization localization, Equipment equipmentSerialNumber) {
         this.id = id;
         this.responsible = responsible;
         this.osNumber = osNumber;
-        this.nf_e = nf_e;
+        this.nfe = nfe;
         this.registrationDate = registrationDate;
-        this.client = client;
-        this.equipment = equipment;
+        this.codClient = codClient;
+        this.localization = localization;
+        this.equipmentSerialNumber = equipmentSerialNumber;
     }
 
-    // Getters e setters
     public long getId() {
         return id;
     }
@@ -70,13 +78,21 @@ public class ServiceOrder {
     public void setResponsible(String responsible) {
         this.responsible = responsible;
     }
-    
-    public String getNf_e() {
-        return nf_e;
+
+    public String getOsNumber() {
+        return osNumber;
     }
 
-    public void setNf_e(String nf_e) {
-        this.nf_e = nf_e;
+    public void setOsNumber(String osNumber) {
+        this.osNumber = osNumber;
+    }
+
+    public String getNfe() {
+        return nfe;
+    }
+
+    public void setNfe(String nfe) {
+        this.nfe = nfe;
     }
 
     public LocalDateTime getRegistrationDate() {
@@ -87,28 +103,30 @@ public class ServiceOrder {
         this.registrationDate = registrationDate;
     }
 
-    public Client getClient() {
-        return client;
+    public Client getCodClient() {
+        return codClient;
     }
 
-    public void setClient(Client client) {
-        this.client = client;
+    public void setCodClient(Client codClient) {
+        this.codClient = codClient;
     }
 
-    public String getOsNumber() {
-        return osNumber;
+    public Localization getLocalization() {
+        return localization;
     }
 
-    public void setOsNumber(String osNumber) {
-        this.osNumber = osNumber;
+    public void setLocalization(Localization localization) {
+        this.localization = localization;
     }
 
-    public Equipment getEquipment() {
-        return equipment;
+    public Equipment getEquipmentSerialNumber() {
+        return equipmentSerialNumber;
     }
 
-    public void setEquipment(Equipment equipment) {
-        this.equipment = equipment;
+    public void setEquipmentSerialNumber(Equipment equipmentSerialNumber) {
+        this.equipmentSerialNumber = equipmentSerialNumber;
     }
+
+    
     
 }

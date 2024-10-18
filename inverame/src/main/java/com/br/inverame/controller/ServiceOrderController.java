@@ -1,91 +1,87 @@
 package com.br.inverame.controller;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.br.inverame.model.entity.ServiceOrder;
+import com.br.inverame.model.entity.dto.ServiceOrderDTO;
 import com.br.inverame.service.ServiceOrderService;
 
 @RestController
-@RequestMapping("/api/serviceOrders")
+@RequestMapping("/api/service-orders")
 public class ServiceOrderController {
 
     @Autowired
     private ServiceOrderService serviceOrderService;
 
-    @GetMapping
-    public ResponseEntity<List<ServiceOrder>> getAllServiceOrders() {
-        List<ServiceOrder> serviceOrders = serviceOrderService.findAll();
-        return ResponseEntity.ok(serviceOrders);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ServiceOrder> getServiceOrderById(@PathVariable Long id) {
-        Optional<ServiceOrder> serviceOrder = serviceOrderService.findById(id);
-        if (serviceOrder.isPresent()) {
-            return ResponseEntity.ok(serviceOrder.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
-
-    @PostMapping
-    public ResponseEntity<ServiceOrder> createServiceOrder(@RequestBody Map<String, Object> request) {
+    // Criar nova ordem de serviço
+    @PostMapping("/create")
+    public ResponseEntity<Map<String, Object>> createServiceOrder(@RequestBody @Valid ServiceOrderDTO serviceOrderDTO) {
+        Map<String, Object> response = new HashMap<>();
         try {
-            // Extrai o clientId e equipmentId do corpo da requisição
-            Long clientId = Long.valueOf(request.get("clientId").toString());
-            Long equipmentId = Long.valueOf(request.get("equipmentId").toString());
-
-            // Cria a nova ServiceOrder
-            ServiceOrder serviceOrder = new ServiceOrder();
-            serviceOrder.setResponsible(request.get("responsible").toString());
-            serviceOrder.setOsNumber(request.get("osNumber").toString());
-            serviceOrder.setNf_e(request.get("nf_e") != null ? request.get("nf_e").toString() : null);
-            serviceOrder.setRegistrationDate(LocalDateTime.now());
-
-            // Cria a ServiceOrder com base no clientId e equipmentId
-            ServiceOrder savedServiceOrder = serviceOrderService.createServiceOrder(clientId, equipmentId, serviceOrder);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedServiceOrder);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            ServiceOrderDTO savedServiceOrder = serviceOrderService.createServiceOrder(serviceOrderDTO);
+            response.put("message", "Ordem de serviço criada com sucesso!");
+            response.put("osNumber", savedServiceOrder.getOsNumber());
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (IllegalArgumentException e) {
+            response.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ServiceOrder> updateServiceOrder(@PathVariable Long id,
-            @RequestBody Map<String, Object> request) {
-        try {
-            // Extrai o equipmentId do corpo da requisição
-            Long equipmentId = Long.valueOf(request.get("equipmentId").toString());
-
-            // Cria um objeto ServiceOrder para atualizar
-            ServiceOrder serviceOrder = new ServiceOrder();
-            serviceOrder.setResponsible(request.get("responsible").toString());
-            serviceOrder.setOsNumber(request.get("osNumber").toString());
-            serviceOrder.setNf_e(request.get("nf_e") != null ? request.get("nf_e").toString() : null);
-            serviceOrder.setRegistrationDate(LocalDateTime.now());
-
-            // Atualiza a ServiceOrder
-            ServiceOrder updatedServiceOrder = serviceOrderService.updateServiceOrder(id, equipmentId, serviceOrder);
-            return ResponseEntity.ok(updatedServiceOrder);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    // Buscar todas as ordens de serviço
+    @GetMapping("/all")
+    public ResponseEntity<List<ServiceOrderDTO>> getAllServiceOrders() {
+        List<ServiceOrderDTO> serviceOrders = serviceOrderService.findAll();
+        return new ResponseEntity<>(serviceOrders, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteServiceOrder(@PathVariable Long id) {
-        Optional<ServiceOrder> serviceOrder = serviceOrderService.findById(id);
+    // Buscar ordem de serviço por osNumber
+    @GetMapping("/os/{osNumber}")
+    public ResponseEntity<?> getServiceOrderByOsNumber(@PathVariable String osNumber) {
+        Optional<ServiceOrderDTO> serviceOrder = serviceOrderService.findByOsNumber(osNumber);
         if (serviceOrder.isPresent()) {
-            serviceOrderService.deleteById(id);
-            return ResponseEntity.noContent().build();
+            return new ResponseEntity<>(serviceOrder.get(), HttpStatus.OK);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return new ResponseEntity<>("Ordem de serviço não encontrada", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Atualizar ordem de serviço por osNumber
+    @PutMapping("/os/{osNumber}")
+    public ResponseEntity<Map<String, Object>> updateServiceOrder(@PathVariable String osNumber,
+            @RequestBody @Valid ServiceOrderDTO serviceOrderDTO) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            ServiceOrderDTO updatedServiceOrder = serviceOrderService.updateServiceOrder(osNumber, serviceOrderDTO);
+            response.put("message", "Ordem de serviço atualizada com sucesso!");
+            response.put("osNumber", updatedServiceOrder.getOsNumber());
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            response.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    // Deletar ordem de serviço por osNumber
+    @DeleteMapping("/os/{osNumber}")
+    public ResponseEntity<Map<String, Object>> deleteServiceOrder(@PathVariable String osNumber) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            serviceOrderService.deleteServiceOrderByOsNumber(osNumber);
+            response.put("message", "Ordem de serviço com número: " + osNumber + " deletada com sucesso.");
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
 }

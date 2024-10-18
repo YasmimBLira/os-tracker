@@ -1,27 +1,12 @@
-
-CREATE TABLE equipment (
+CREATE TABLE employees (
     id BIGINT NOT NULL AUTO_INCREMENT,
-    equipment_name VARCHAR(255) NOT NULL,
-    serial_number VARCHAR(255) NOT NULL,
-    carrier VARCHAR(255) NOT NULL,
-    receiver VARCHAR(255) NOT NULL,
-    enterprise_name VARCHAR(255) NOT NULL,
-    brand VARCHAR(255) NOT NULL,
-    model VARCHAR(255) NOT NULL,
-    current INT NOT NULL,
-    power INT NOT NULL,
-    voltage INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,      -- Unicidade para email
     registration_date DATETIME(6) NOT NULL,
-    priority ENUM('A', 'B', 'C') NOT NULL,
-    photo_url VARCHAR(255),
-    connectors ENUM('SIM', 'NAO') NOT NULL,
-    ihm ENUM('SIM', 'NAO') NOT NULL,
-    carcass_damage ENUM('SIM', 'NAO') NOT NULL,
-    engine ENUM('SIM', 'NAO') NOT NULL,
-    engine_cables ENUM('SIM', 'NAO') NOT NULL,
-    fan ENUM('SIM', 'NAO') NOT NULL,
-    fan_carcass ENUM('SIM', 'NAO') NOT NULL,
-    others VARCHAR(255),
-    PRIMARY KEY (id, serial_number),
-    UNIQUE (serial_number)
+    employee_cod VARCHAR(50) NOT NULL, -- Unicidade para employee_cod
+    password VARCHAR(255) NOT NULL,           -- Campo para armazenar a senha
+    role ENUM('ADM', 'NORMAL') NOT NULL,      -- Campo para armazenar o papel (role)
+    PRIMARY KEY (id, employee_cod),          -- Chave primária composta
+     UNIQUE (email), 
+     UNIQUE (employee_cod)
 );

@@ -32,6 +32,17 @@ public class Client {
     @Column(name = "cnpj", nullable = false)
     private String cnpj;
 
+    public Client() {
+    }
+
+    public Client(Long id, String name, String phone, LocalDateTime registerDate, String codClient, String cnpj) {
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+        this.registerDate = registerDate;
+        this.codClient = codClient;
+        this.cnpj = cnpj;
+    }
     // Getters and Setters
     public Long getId() {return id;}
     public void setId(Long id) {this.id = id;}
