@@ -38,7 +38,7 @@ public class EquipmentService {
     private static final String SERVICE_ACOUNT_KEY_PATH = getPathToGoogleCredentials();
 
     private static String getPathToGoogleCredentials() {
-        return "C:\\Users\\thial\\OneDrive\\Área de Trabalho\\OS-Tracker\\os-tracker\\credentials.json";
+        return "C:\\Users\\PC\\Desktop\\os-tracker\\credentials.json";
     }
 
     public Equipment saveEquipment(Equipment equipment, File imageFile) throws GeneralSecurityException, IOException {
