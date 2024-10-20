@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -118,9 +119,19 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId> <!-- Remova o espaço aqui -->
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-maven-plugin</artifactId>
+				<version>10.10.0</version>
+				<configuration>
+					<url>jdbc:postgresql://aws-0-sa-east-1.pooler.supabase.com:6543/postgres?reWriteBatchedInserts=false</url>
+					<user>postgres.ehvynvkadykyworbmyaq</user>
+					<password>Z344Vb9veG5fQ7xn</password>
+					<driver>org.postgresql.Driver</driver>
+					<schemas>public</schemas>
+					<locations>filesystem:src/main/resources/db/migration</locations>
+					<baselineOnMigrate>true</baselineOnMigrate>
+				</configuration>
 			</plugin>
 		</plugins>
-	</build>
+	</build>	
 </project>
