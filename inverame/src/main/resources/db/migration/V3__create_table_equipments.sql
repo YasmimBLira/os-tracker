@@ -1,5 +1,5 @@
 CREATE TABLE equipments (
-    id BIGINT NOT NULL AUTO_INCREMENT,
+    id BIGINT GENERATED ALWAYS AS IDENTITY, -- Geração automática de IDs
     equipment_name VARCHAR(255) NOT NULL,
     serial_number VARCHAR(50) NOT NULL,
     carrier VARCHAR(255) NOT NULL,
@@ -10,18 +10,17 @@ CREATE TABLE equipments (
     current INT,
     power INT,
     voltage INT,
-    registration_date DATETIME(6) NOT NULL,
-    priority ENUM('A', 'B', 'C') NOT NULL,
+    registration_date TIMESTAMP(6) NOT NULL, -- Tipo de data corrigido
+    priority VARCHAR(1) NOT NULL CHECK (priority IN ('A', 'B', 'C')), -- CHECK para simular ENUM
     photo_url VARCHAR(255),
-    connectors ENUM('SIM', 'NAO') NOT NULL,
-    ihm ENUM('SIM', 'NAO') NOT NULL,
-    carcass_damage ENUM('SIM', 'NAO') NOT NULL,
-    engine ENUM('SIM', 'NAO') NOT NULL,
-    engine_cables ENUM('SIM', 'NAO') NOT NULL,
-    fan ENUM('SIM', 'NAO') NOT NULL,
-    fan_carcass ENUM('SIM', 'NAO') NOT NULL,
+    connectors VARCHAR(3) NOT NULL CHECK (connectors IN ('SIM', 'NAO')), -- CHECK para simular ENUM
+    ihm VARCHAR(3) NOT NULL CHECK (ihm IN ('SIM', 'NAO')), -- CHECK para simular ENUM
+    carcass_damage VARCHAR(3) NOT NULL CHECK (carcass_damage IN ('SIM', 'NAO')), -- CHECK para simular ENUM
+    engine VARCHAR(3) NOT NULL CHECK (engine IN ('SIM', 'NAO')), -- CHECK para simular ENUM
+    engine_cables VARCHAR(3) NOT NULL CHECK (engine_cables IN ('SIM', 'NAO')), -- CHECK para simular ENUM
+    fan VARCHAR(3) NOT NULL CHECK (fan IN ('SIM', 'NAO')), -- CHECK para simular ENUM
+    fan_carcass VARCHAR(3) NOT NULL CHECK (fan_carcass IN ('SIM', 'NAO')), -- CHECK para simular ENUM
     others VARCHAR(255),
-    PRIMARY KEY (id, serial_number),
-    UNIQUE (registration_date),
-    UNIQUE (serial_number)
+    PRIMARY KEY (id),                  -- 'id' como chave primária
+    UNIQUE (serial_number)              -- 'serial_number' deve ser único
 );
