@@ -32,7 +32,7 @@ public class ClientController {
         try {
             Client savedClient = clientService.saveClient(client);
             response.put("message", "Client created successfully");
-            response.put("clientId", savedClient.getId());
+            response.put("codClient", savedClient.getCodClient());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (IllegalArgumentException e) {
             response.put("message", e.getMessage());
@@ -69,10 +69,10 @@ public class ClientController {
         }
     }
 
-    // Buscar cliente por ID
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getClientById(@PathVariable Long id) {
-        Optional<Client> client = clientService.findById(id);
+    // Buscar cliente por codClient
+    @GetMapping("/codClient/{codClient}")
+    public ResponseEntity<?> getClientByCodClient(@PathVariable String codClient) {
+        Optional<Client> client = clientService.findByCodClient(codClient);
         if (client.isPresent()) {
             return new ResponseEntity<>(client.get(), HttpStatus.OK);
         } else {
@@ -80,14 +80,14 @@ public class ClientController {
         }
     }
 
-    // Atualizar cliente por ID com Map<String, Object>
-    @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateClient(@PathVariable Long id, @RequestBody ClientUpdateDTO clientUpdateDTO) {
+    // Atualizar cliente por codClient com Map<String, Object>
+    @PutMapping("/codClient/{codClient}")
+    public ResponseEntity<Map<String, Object>> updateClient(@PathVariable String codClient, @RequestBody ClientUpdateDTO clientUpdateDTO) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Client updatedClient = clientService.updateClient(id, clientUpdateDTO);
+            Client updatedClient = clientService.updateClientByCodClient(codClient, clientUpdateDTO);
             response.put("message", "Client updated successfully");
-            response.put("clientId", updatedClient.getId());
+            response.put("codClient", updatedClient.getCodClient());
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (IllegalArgumentException e) {
             response.put("message", e.getMessage());
@@ -110,16 +110,15 @@ public class ClientController {
         }
     }
 
-    // Deletar cliente por ID com Map<String, Object>
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> deleteClient(@PathVariable Long id) {
+    // Deletar cliente por codClient com Map<String, Object>
+    @DeleteMapping("/codClient/{codClient}")
+    public ResponseEntity<Map<String, Object>> deleteClient(@PathVariable String codClient) {
         Map<String, Object> response = new HashMap<>();
         try {
-            clientService.deleteById(id);
-            response.put("message", "Client deleted successfully");
-            response.put("clientId", id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
-        } catch (IllegalArgumentException e) {
+            clientService.deleteClientByCodClient(codClient);
+            response.put("message", "Client with codClient " + codClient + " was successfully deleted.");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (EntityNotFoundException e) {
             response.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
@@ -127,7 +126,7 @@ public class ClientController {
 
     // Deletar cliente por CNPJ com Map<String, Object>
     @DeleteMapping("/cnpj/{cnpj}")
-    public ResponseEntity<Map<String, Object>> deleteClient(@PathVariable String cnpj) {
+    public ResponseEntity<Map<String, Object>> deleteClientByCnpj(@PathVariable String cnpj) {
         Map<String, Object> response = new HashMap<>();
         try {
             clientService.deleteClientByCnpj(cnpj);

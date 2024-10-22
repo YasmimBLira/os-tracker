@@ -8,7 +8,6 @@ import com.br.inverame.repository.ClientRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,60 +39,31 @@ public class ClientService {
     }
 
     // =========================BUSCAR===============================
-    // buscar por ID
-    public Optional<Client> findById(Long id) {
-        return clientRepository.findById(id);
+    // Buscar por codClient
+    public Optional<Client> findByCodClient(String codClient) {
+        return clientRepository.findByCodClient(codClient);
     }
 
-    // buscar por CNPJ
-    public Optional<Client> findByCnpj(String cnpj) {
-        return clientRepository.findByCnpj(cnpj);
-    }
-
-    // buscar por name
+    // Buscar por name
     public Optional<Client> findByName(String name) {
         return clientRepository.findByName(name);
     }
 
-    // buscar todos
+    // Buscar por CNPJ
+    public Optional<Client> findByCnpj(String cnpj) {
+        return clientRepository.findByCnpj(cnpj);
+    }
+
+    // Buscar todos os clientes
     public List<Client> findAll() {
         return clientRepository.findAll();
     }
 
     // ============================ATUALIZAR================================================
-    // Atualizar cliente por ID
-    public Client updateClient(Long id, ClientUpdateDTO clientUpdateDTO) {
-        // Verificamos se o cliente existe e obtemos o cliente existente.
-        Client existingClient = clientRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Client com ID não existe."));
-
-        // Verificações adicionais
-        if (clientRepository.existsByName(clientUpdateDTO.getName())
-                && !clientRepository.findByName(clientUpdateDTO.getName()).get().getId().equals(id)) {
-            throw new IllegalArgumentException("Client with this name already exists.");
-        }
-        if (clientRepository.existsByCnpj(clientUpdateDTO.getCnpj())
-                && !clientRepository.findByCnpj(clientUpdateDTO.getCnpj()).get().getId().equals(id)) {
-            throw new IllegalArgumentException("Client with this CNPJ already exists.");
-        }
-        if (clientRepository.existsByCodClient(clientUpdateDTO.getCodClient())
-                && !clientRepository.findByCodClient(clientUpdateDTO.getCodClient()).get().getId().equals(id)) {
-            throw new IllegalArgumentException("Client with this code already exists.");
-        }
-
-        // Atualizar apenas os campos permitidos
-        existingClient.setName(clientUpdateDTO.getName());
-        existingClient.setPhone(clientUpdateDTO.getPhone());
-        existingClient.setCodClient(clientUpdateDTO.getCodClient());
-        existingClient.setCnpj(clientUpdateDTO.getCnpj());
-
-        return clientRepository.save(existingClient);
-    }
-
     // Atualizar cliente por CNPJ
     public Client updateClientByCnpj(String cnpj, ClientUpdateDTO clientUpdateDTO) {
         Client existingClient = clientRepository.findByCnpj(cnpj)
-                .orElseThrow(() -> new IllegalArgumentException("Client com CNPJ não existe."));
+                .orElseThrow(() -> new IllegalArgumentException("Client with CNPJ not found."));
 
         // Verificações adicionais
         if (clientRepository.existsByName(clientUpdateDTO.getName())
@@ -106,13 +76,34 @@ public class ClientService {
                         .equals(existingClient.getId())) {
             throw new IllegalArgumentException("Client with this code already exists.");
         }
+
+        // Atualizar campos permitidos
+        existingClient.setName(clientUpdateDTO.getName());
+        existingClient.setPhone(clientUpdateDTO.getPhone());
+        existingClient.setCodClient(clientUpdateDTO.getCodClient());
+        existingClient.setCnpj(clientUpdateDTO.getCnpj());
+
+        return clientRepository.save(existingClient);
+    }
+
+    // Atualizar cliente por codClient
+    public Client updateClientByCodClient(String codClient, ClientUpdateDTO clientUpdateDTO) {
+        Client existingClient = clientRepository.findByCodClient(codClient)
+                .orElseThrow(() -> new IllegalArgumentException("Client with codClient not found."));
+
+        // Verificações adicionais
+        if (clientRepository.existsByName(clientUpdateDTO.getName())
+                && !clientRepository.findByName(clientUpdateDTO.getName()).get().getId()
+                        .equals(existingClient.getId())) {
+            throw new IllegalArgumentException("Client with this name already exists.");
+        }
         if (clientRepository.existsByCnpj(clientUpdateDTO.getCnpj())
                 && !clientRepository.findByCnpj(clientUpdateDTO.getCnpj()).get().getId()
                         .equals(existingClient.getId())) {
             throw new IllegalArgumentException("Client with this CNPJ already exists.");
         }
 
-        // Atualizar apenas os campos permitidos
+        // Atualizar campos permitidos
         existingClient.setName(clientUpdateDTO.getName());
         existingClient.setPhone(clientUpdateDTO.getPhone());
         existingClient.setCodClient(clientUpdateDTO.getCodClient());
@@ -122,21 +113,17 @@ public class ClientService {
     }
 
     // =============================DELETAR===========================================
-    // deletar por ID
-    public void deleteById(Long id) {
-        try {
-            clientRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("Client with this ID does not exist.");
-        }
-    }
-
-    // Deletar um cliente pelo CNPJ
+    // Deletar cliente por CNPJ
     public void deleteClientByCnpj(String cnpj) {
         Client client = clientRepository.findByCnpj(cnpj)
-                .orElseThrow(() -> new EntityNotFoundException("Cliente com CNPJ " + cnpj + " não encontrado."));
-
+                .orElseThrow(() -> new EntityNotFoundException("Client with CNPJ " + cnpj + " not found."));
         clientRepository.delete(client);
     }
 
+    // Deletar cliente por codClient
+    public void deleteClientByCodClient(String codClient) {
+        Client client = clientRepository.findByCodClient(codClient)
+                .orElseThrow(() -> new EntityNotFoundException("Client with codClient " + codClient + " not found."));
+        clientRepository.delete(client);
+    }
 }

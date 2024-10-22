@@ -3,8 +3,6 @@ package com.br.inverame.model.entity.dto;
 import com.br.inverame.model.enums.Choice;
 import com.br.inverame.model.enums.Priority;
 
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class EquipmentUpdateDTO {
@@ -64,8 +62,6 @@ public class EquipmentUpdateDTO {
     private Choice fan_carcass;
 
     private String others;
-
-    private String photoURL;
 
     // Getters and Setters
 
@@ -221,13 +217,6 @@ public class EquipmentUpdateDTO {
         this.serialNumber = serialNumber;
     }
 
-    public String getPhotoURL() {
-        return photoURL;
-    }
-
-    public void setPhotoURL(String photoURL) {
-        this.photoURL = photoURL;
-    }
 
     
 }

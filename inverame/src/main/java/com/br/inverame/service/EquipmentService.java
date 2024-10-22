@@ -22,6 +22,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.services.drive.DriveScopes;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class EquipmentService {
     private static final String SERVICE_ACOUNT_KEY_PATH = getPathToGoogleCredentials();
 
     private static String getPathToGoogleCredentials() {
-        return "C:\\Users\\PC\\Desktop\\os-tracker\\credentials.json";
+        return "C:\\Users\\thial\\OneDrive\\Área de Trabalho\\OS-Tracker\\os-tracker\\credentials.json";
     }
 
     public Equipment saveEquipment(Equipment equipment, File imageFile) throws GeneralSecurityException, IOException {
@@ -46,7 +47,7 @@ public class EquipmentService {
         if (equipmentRepository.findBySerialNumber(equipment.getSerialNumber()).isPresent()) {
             throw new IllegalArgumentException("Equipment with this serial number already exists.");
         }
-   
+
         // Define a data de registro automaticamente
         equipment.setRegistrationDate(LocalDateTime.now());
 
@@ -57,7 +58,8 @@ public class EquipmentService {
         return equipmentRepository.save(equipment);
     }
 
-    public Equipment updateEquipment(String serialNumber, EquipmentUpdateDTO equipmentUpdateDTO, File imageFile) throws GeneralSecurityException, IOException {
+    public Equipment updateEquipment(String serialNumber, EquipmentUpdateDTO equipmentUpdateDTO)
+            throws GeneralSecurityException, IOException {
         Equipment existingEquipment = equipmentRepository.findBySerialNumber(serialNumber)
                 .orElseThrow(() -> new IllegalArgumentException("Equipment with this serial number does not exist."));
 
@@ -73,13 +75,6 @@ public class EquipmentService {
         existingEquipment.setPower(equipmentUpdateDTO.getPower());
         existingEquipment.setVoltage(equipmentUpdateDTO.getVoltage());
         existingEquipment.setPriority(equipmentUpdateDTO.getPriority());
-
-        // Faz upload da imagem se fornecida
-        if (imageFile != null) {
-            String imageUrl = uploadImageToDrive(imageFile, serialNumber, existingEquipment.getEquipmentName());
-            existingEquipment.setPhotoURL(imageUrl); // Atualiza a URL da imagem no equipamento
-        }
-
         existingEquipment.setConnectors(equipmentUpdateDTO.getConnectors());
         existingEquipment.setIhm(equipmentUpdateDTO.getIhm());
         existingEquipment.setCarcass_damage(equipmentUpdateDTO.getCarcass_damage());
@@ -92,7 +87,8 @@ public class EquipmentService {
         return equipmentRepository.save(existingEquipment);
     }
 
-    public String uploadImageToDrive(File file, String serialNumber, String equipmentName) throws GeneralSecurityException, IOException {
+    public String uploadImageToDrive(File file, String serialNumber, String equipmentName)
+            throws GeneralSecurityException, IOException {
         String imageUrl = null;
         try {
             String folderId = "1vvLR8VUzZWMa5k09XtQOTzGCENNhZqsl";
@@ -154,6 +150,7 @@ public class EquipmentService {
     }
 
     // Método para deletar equipamento pelo número de série
+    @Transactional
     public void deleteBySerialNumber(String serialNumber) {
         if (!equipmentRepository.findBySerialNumber(serialNumber).isPresent()) {
             throw new EntityNotFoundException("Equipment with this serial number does not exist.");

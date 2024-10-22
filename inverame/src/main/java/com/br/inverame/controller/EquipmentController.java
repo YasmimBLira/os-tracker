@@ -145,7 +145,7 @@ public class EquipmentController {
             @RequestBody EquipmentUpdateDTO equipmentUpdateDTO) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Equipment updatedEquipment = equipmentService.updateEquipment(serialNumber, equipmentUpdateDTO, null); 
+            Equipment updatedEquipment = equipmentService.updateEquipment(serialNumber, equipmentUpdateDTO); 
             
             response.put("message", "Equipment updated successfully");
             response.put("equipmentSerialNumber", updatedEquipment.getSerialNumber());
@@ -166,7 +166,6 @@ public class EquipmentController {
         try {
             equipmentService.deleteBySerialNumber(serialNumber);
             response.put("message", "Equipment deleted successfully");
-            response.put("equipmentSerialNumber", serialNumber);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
         } catch (IllegalArgumentException e) {
             response.put("message", e.getMessage());

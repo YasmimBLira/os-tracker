@@ -1,6 +1,9 @@
 package com.br.inverame.repository;
 
 import com.br.inverame.model.entity.Equipment;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +16,6 @@ public interface EquipmentRepository extends JpaRepository<Equipment, Long> {
 
     Optional<Equipment> findBySerialNumber(String serialNumber);
 
-    // Adicione o método deleteBySerialNumber
+    @Transactional
     void deleteBySerialNumber(String serialNumber);
 }
